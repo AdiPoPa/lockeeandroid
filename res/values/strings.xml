@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Lockee</string>
+    <string name="sign_in">Sign In</string>
+    <string name="welcome">Welcome</string>
+    <string name="register"><u>I want to register...</u></string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="own_code"><u>I have a code...</u></string>
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+    <string name="terms">I agree to the terms and conditions</string>
+    <string name="registerWelcome">Create an account</string>
+    <string name="registerButton">Register</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_name">Fullname</string>
+    <string name="wrongLogin"><b>Login information is wrong</b></string>
+</resources>
