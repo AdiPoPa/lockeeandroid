@@ -15,6 +15,8 @@
     <string name="correctRegister"><b>Account successfully registered</b></string>
     <string name="wrongRegister"><b>Register information is wrong</b></string>
     <string name="hint_confirmpassword">Confirm password</string>
-    <string name="hint_lastname">Last name</string>
-    <string name="hint_firstname">First name</string>
+    <string name="hint_name">Full name</string>
+    <string name="termsNotChecked">Please accept the terms and conditions</string>
+    <string name="confirmPasswordWrong">Please confirm the password</string>
+    <string name="doubleRegister">An account with this email already exists</string>
 </resources>

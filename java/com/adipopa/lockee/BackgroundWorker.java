@@ -38,10 +38,8 @@ public class BackgroundWorker extends AsyncTask<String, Void, String> {
         String login_url = "https://lockee-app-adipopa.c9users.io/login.php";
         String register_url = "https://lockee-app-adipopa.c9users.io/register.php";
         if (!login_url.isEmpty() && !register_url.isEmpty()) {
-
-            // This is the login request
-
-            if (type.equals("login")) {
+            if(type.equals("login")) {
+                // This is the login request
                 try {
                     String email = params[1];
                     String password = params[2];
@@ -74,15 +72,13 @@ public class BackgroundWorker extends AsyncTask<String, Void, String> {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
+            }
             // This is the register request
-
-            } else if(type.equals("register")){
+            else if(type.equals("register")){
                 try {
-                    String firstName = params[1];
-                    String lastName = params[2];
-                    String email = params[3];
-                    String password = params[4];
+                    String name = params[1];
+                    String email = params[2];
+                    String password = params[3];
                     URL url = new URL(register_url);
                     HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                     httpURLConnection.setRequestMethod("POST");
@@ -90,8 +86,7 @@ public class BackgroundWorker extends AsyncTask<String, Void, String> {
                     httpURLConnection.setDoInput(true);
                     OutputStream outputStream = httpURLConnection.getOutputStream();
                     BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
-                    String postData = URLEncoder.encode("firstName", "UTF-8") + "=" + URLEncoder.encode(firstName, "UTF-8") + "&" +
-                            URLEncoder.encode("lastName", "UTF-8") + "=" + URLEncoder.encode(lastName, "UTF-8") + "&" +
+                    String postData = URLEncoder.encode("name", "UTF-8") + "=" + URLEncoder.encode(name, "UTF-8") + "&" +
                             URLEncoder.encode("email", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8") + "&" +
                             URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8");
                     bufferedWriter.write(postData);
@@ -162,15 +157,11 @@ public class BackgroundWorker extends AsyncTask<String, Void, String> {
                 break;
             }
             case "register success": {
-                myMsg.setText(R.string.correctRegister);
-                alertDialog.setView(myMsg);
-                alertDialog.show();
+
                 break;
             }
-            case "register information error": {
-                myMsg.setText(R.string.wrongRegister);
-                alertDialog.setView(myMsg);
-                alertDialog.show();
+            case "error": {
+
                 break;
             }
         }
@@ -180,4 +171,6 @@ public class BackgroundWorker extends AsyncTask<String, Void, String> {
     protected void onProgressUpdate(Void... values) {
         super.onProgressUpdate(values);
     }
+
+
 }
