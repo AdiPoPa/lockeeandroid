@@ -1,14 +1,10 @@
 package com.adipopa.lockee;
 
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.Selection;
-import android.util.TypedValue;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -24,18 +20,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_screen);
 
-        // Convert DIP to pixels
-
-        Resources r = getResources();
-        int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 400,
-                r.getDisplayMetrics()
-        );
-
         emailField = (EditText)findViewById(R.id.emailField);
-        emailField.setWidth(width);
-
         passwordField = (EditText)findViewById(R.id.passwordField);
-        passwordField.setWidth(width);
 
         final TextView register = (TextView)findViewById(R.id.register);
 
@@ -56,14 +42,13 @@ public class LoginActivity extends AppCompatActivity {
                 }
         );
     }
+
     public void onLogin(View view){
         String email = emailField.getText().toString();
         String password = passwordField.getText().toString();
         String type = "login";
 
-        LoginWorker backgroundWorker = new LoginWorker(this);
+        BackgroundWorker backgroundWorker = new BackgroundWorker(this);
         backgroundWorker.execute(type, email, password);
-
-
     }
 }
