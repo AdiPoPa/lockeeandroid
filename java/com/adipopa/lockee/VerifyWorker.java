@@ -15,7 +15,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
-public class VerifyWorker extends AsyncTask<String, Void, String> {
+public class VerifyWorker extends AsyncTask<String, Integer, String> {
 
     TextWatcher watcher;
     static String emailStatus = "email available";
@@ -75,13 +75,13 @@ public class VerifyWorker extends AsyncTask<String, Void, String> {
         if(result.equals("email available")) {
             emailStatus = result;
         }
-        else if(result.equals("email taken")){
+        else {
             emailStatus = result;
         }
     }
 
     @Override
-    protected void onProgressUpdate(Void... values) {
-        super.onProgressUpdate(values);
+    protected void onProgressUpdate(Integer... values) {
+        super.onProgressUpdate();
     }
 }

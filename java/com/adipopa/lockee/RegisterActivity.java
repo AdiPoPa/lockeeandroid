@@ -1,24 +1,23 @@
 package com.adipopa.lockee;
 
-import android.app.AlertDialog;
-import android.graphics.Color;
+
 import android.os.Handler;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 
 public class RegisterActivity extends AppCompatActivity {
 
     EditText nameField, emailField, passwordField, confirmPasswordField;
-    TextView nameText, emailText, passwordText, confirmPasswordText;
-    CheckBox termsCheckBox;
+    TextView nameError, emailError, passwordError, confirmPasswordError;
+    CheckBox termsCheckBox, errorCheckBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,12 +28,14 @@ public class RegisterActivity extends AppCompatActivity {
         emailField = (EditText) findViewById(R.id.emailField);
         passwordField = (EditText) findViewById(R.id.passwordField);
         confirmPasswordField = (EditText) findViewById(R.id.confirmPasswordField);
-        termsCheckBox = (CheckBox) findViewById(R.id.termsCheckBox);
 
-        nameText = (TextView) findViewById(R.id.nameText);
-        emailText = (TextView) findViewById(R.id.emailText);
-        passwordText = (TextView) findViewById(R.id.passwordText);
-        confirmPasswordText = (TextView) findViewById(R.id.confirmPasswordText);
+        termsCheckBox = (CheckBox) findViewById(R.id.termsCheckBox);
+        errorCheckBox = (CheckBox) findViewById(R.id.errorCheckBox);
+
+        nameError = (TextView) findViewById(R.id.nameError);
+        emailError = (TextView) findViewById(R.id.emailError);
+        passwordError = (TextView) findViewById(R.id.passwordError);
+        confirmPasswordError = (TextView) findViewById(R.id.confirmPasswordError);
 
         setErrorTextsDefault();
 
@@ -46,21 +47,11 @@ public class RegisterActivity extends AppCompatActivity {
                 String namePattern3 = "[A-Z]+[a-z]+ +[A-Z]+[a-z]+ +[A-Z]+[a-z]+";
                 String namePattern4 = "[A-Z]+[a-z]+ +[A-Z]+[a-z]+ +[A-Z]+[a-z]+ +[A-Z]+[a-z]+";
                 if(name.isEmpty()){
-                    showErrorBorder(nameField);
-                    hideTick(nameField);
-                    nameText.setHeight(16);
-                    nameText.setVisibility(View.INVISIBLE);
+                    emptyError(nameField, nameError);
                 }else if(!name.matches(namePattern2) && !name.matches(namePattern3) && !name.matches(namePattern4)){
-                    showErrorBorder(nameField);
-                    hideTick(nameField);
-                    nameText.setHeight(54);
-                    nameText.setVisibility(View.VISIBLE);
-                    nameText.setText("We'd like to know you, give us your real name");
+                    showError(nameField, nameError, "We'd like to know you, give us your real name");
                 }else{
-                    hideErrorBorder(nameField);
-                    showTick(nameField);
-                    nameText.setHeight(16);
-                    nameText.setVisibility(View.INVISIBLE);
+                    hideError(nameField, nameError);
                 }
             }
 
@@ -80,16 +71,9 @@ public class RegisterActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String email = emailField.getText().toString();
                 if (email.equals("")) {
-                    emailText.setHeight(16);
-                    emailText.setVisibility(View.INVISIBLE);
-                    hideTick(emailField);
-                    showErrorBorder(emailField);
+                    emptyError(emailField, emailError);
                 } else if (!isEmailValid(email)) {
-                    emailText.setHeight(54);
-                    emailText.setVisibility(View.VISIBLE);
-                    emailText.setText("Please type a valid email address");
-                    hideTick(emailField);
-                    showErrorBorder(emailField);
+                    showError(emailField, emailError, "Please type a valid email address");
                 }
                 else {
                     VerifyWorker verifyWorker = new VerifyWorker(this);
@@ -99,16 +83,9 @@ public class RegisterActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             if (VerifyWorker.emailStatus.equals("email available")) {
-                                emailText.setHeight(16);
-                                emailText.setVisibility(View.INVISIBLE);
-                                showTick(emailField);
-                                hideErrorBorder(emailField);
-                            } else if (VerifyWorker.emailStatus.equals("email taken")) {
-                                emailText.setHeight(54);
-                                emailText.setVisibility(View.VISIBLE);
-                                emailText.setText("This email is associated with another account");
-                                hideTick(emailField);
-                                showErrorBorder(emailField);
+                                hideError(emailField, emailError);
+                            } else {
+                                showError(emailField, emailError, "This email is associated with another account");
                             }
                         }
                     }, 500);
@@ -132,47 +109,22 @@ public class RegisterActivity extends AppCompatActivity {
                 String password = passwordField.getText().toString();
                 String confirmPassword = confirmPasswordField.getText().toString();
                 if (password.isEmpty()) {
-                    showErrorBorder(passwordField);
-                    hideTick(passwordField);
-                    passwordText.setHeight(16);
-                    passwordText.setVisibility(View.INVISIBLE);
+                    emptyError(passwordField, passwordError);
                 } else if (!password.isEmpty() && !confirmPassword.isEmpty()){
                     if (password.equals(confirmPassword)) {
-                        hideErrorBorder(confirmPasswordField);
-                        showTick(confirmPasswordField);
-                        confirmPasswordText.setHeight(16);
-                        confirmPasswordText.setVisibility(View.INVISIBLE);
+                        hideError(confirmPasswordField, confirmPasswordError);
                     } else if (!password.equals(confirmPassword)) {
-                        showErrorBorder(confirmPasswordField);
-                        hideTick(confirmPasswordField);
-                        confirmPasswordText.setHeight(54);
-                        confirmPasswordText.setVisibility(View.VISIBLE);
-                        confirmPasswordText.setText("The password doesn't match the one above");
+                        showError(confirmPasswordField, confirmPasswordError, "The password doesn't match the one above");
                      }
                 }
                 if (!password.isEmpty() && password.length() < 8) {
-                    showErrorBorder(passwordField);
-                    hideTick(passwordField);
-                    passwordText.setHeight(54);
-                    passwordText.setVisibility(View.VISIBLE);
-                    passwordText.setText("Your password must be at least 8 characters long");
+                    showError(passwordField, passwordError, "Your password must be at least 8 characters long");
                 } else if (password.matches("[a-z]+")) {
-                    showErrorBorder(passwordField);
-                    hideTick(passwordField);
-                    passwordText.setHeight(54);
-                    passwordText.setVisibility(View.VISIBLE);
-                    passwordText.setText("Your password must not contain only small letters");
+                    showError(passwordField, passwordError, "Your password must not contain only small letters");
                 } else if (password.matches("[0-9]+")) {
-                    showErrorBorder(passwordField);
-                    hideTick(passwordField);
-                    passwordText.setHeight(54);
-                    passwordText.setVisibility(View.VISIBLE);
-                    passwordText.setText("Your password must contain at least a letter");
+                    showError(passwordField, passwordError, "Your password must contain at least a letter");
                 } else {
-                    hideErrorBorder(passwordField);
-                    showTick(passwordField);
-                    passwordText.setHeight(16);
-                    passwordText.setVisibility(View.INVISIBLE);
+                    hideError(passwordField, passwordError);
                 }
             }
 
@@ -193,21 +145,11 @@ public class RegisterActivity extends AppCompatActivity {
                 String password = passwordField.getText().toString();
                 String confirmPassword = confirmPasswordField.getText().toString();
                 if(confirmPassword.isEmpty()) {
-                    showErrorBorder(confirmPasswordField);
-                    hideTick(confirmPasswordField);
-                    confirmPasswordText.setHeight(16);
-                    confirmPasswordText.setVisibility(View.INVISIBLE);
+                    emptyError(confirmPasswordField, confirmPasswordError);
                 }else if(!password.equals(confirmPassword)){
-                    showErrorBorder(confirmPasswordField);
-                    hideTick(confirmPasswordField);
-                    confirmPasswordText.setHeight(54);
-                    confirmPasswordText.setVisibility(View.VISIBLE);
-                    confirmPasswordText.setText("The password doesn't match the one above");
+                    showError(confirmPasswordField, confirmPasswordError, "The password doesn't match the one above");
                 }else {
-                    hideErrorBorder(confirmPasswordField);
-                    showTick(confirmPasswordField);
-                    confirmPasswordText.setHeight(16);
-                    confirmPasswordText.setVisibility(View.INVISIBLE);
+                    hideError(confirmPasswordField, confirmPasswordError);
                 }
             }
 
@@ -221,7 +163,19 @@ public class RegisterActivity extends AppCompatActivity {
 
             }
         });
+
+        errorCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                errorCheckBox.setVisibility(View.GONE);
+                errorCheckBox.setChecked(false);
+                termsCheckBox.setVisibility(View.VISIBLE);
+                termsCheckBox.setChecked(true);
+            }
+        });
     }
+
+    // Method called when the register button is pressed
 
     public void onRegister(View view){
         String name = nameField.getText().toString();
@@ -230,71 +184,81 @@ public class RegisterActivity extends AppCompatActivity {
         String confirmPassword = confirmPasswordField.getText().toString();
         String type = "register";
 
-        setErrorTextsDefault();
+        if(name.isEmpty()){
+            emptyError(nameField, nameError);
+        }
+        if(email.isEmpty()){
+            emptyError(emailField, emailError);
+        }
+        if(password.isEmpty()){
+            emptyError(passwordField, passwordError);
+        }
+        if(confirmPassword.isEmpty()){
+            emptyError(confirmPasswordField, confirmPasswordError);
+        }
 
-        AlertDialog alertDialog;
-        TextView myMsg;
-        alertDialog = new AlertDialog.Builder(this).create();
-        alertDialog.setTitle("Status");
-        myMsg = new TextView(this);
-        myMsg.setHeight(150);
-        myMsg.setGravity(Gravity.CENTER);
-        myMsg.setTextSize(18);
-        myMsg.setTextColor(Color.BLACK);
-
-
-        if(confirmPassword.equals(password) && termsCheckBox.isChecked()) {
+        if(!termsCheckBox.isChecked()) {
+            termsCheckBox.setVisibility(View.GONE);
+            errorCheckBox.setVisibility(View.VISIBLE);
+        }
+        else if(!nameError.isShown() && !emailError.isShown() && !passwordError.isShown() && !confirmPasswordError.isShown() &&
+                !name.isEmpty() && !email.isEmpty() && !password.isEmpty() && !confirmPassword.isEmpty()){
             BackgroundWorker backgroundWorker = new BackgroundWorker(this);
             backgroundWorker.execute(type, name, email, password, confirmPassword);
         }
-        else if(!confirmPassword.equals(password)){
-            confirmPasswordText.setHeight(54);
-            confirmPasswordText.setVisibility(View.VISIBLE);
-            if(confirmPassword.isEmpty())
-                confirmPasswordText.setText("Please confirm the password");
-            else
-                confirmPasswordText.setText("The password doesn't match the one above");
-        }
-        else if(!termsCheckBox.isChecked()){
-            myMsg.setText(R.string.termsNotChecked);
-            alertDialog.setView(myMsg);
-            alertDialog.show();
-        }
     }
+
+    // Method to check if email field is valid
 
     boolean isEmailValid(CharSequence email) {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
-    public void hideErrorBorder(EditText editText){
-        editText.setBackground(
-                ResourcesCompat.getDrawable(getResources(), R.drawable.edit_text_style, null)
-        );
-    }
+    // Method to show a error in case a field is empty
 
-    public void showErrorBorder(EditText editText){
+    public void emptyError(EditText editText, TextView textView){
         editText.setBackground(
                 ResourcesCompat.getDrawable(getResources(), R.drawable.edit_text_error, null)
         );
+        editText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+        textView.setHeight(16);
+        textView.setVisibility(View.INVISIBLE);
     }
 
-    public void showTick(TextView textView){
-        textView.setCompoundDrawablesWithIntrinsicBounds(null, null,
+    // Method to show a error with a custom string message
+
+    public void showError(EditText editText, TextView textView, String string){
+        editText.setBackground(
+                ResourcesCompat.getDrawable(getResources(), R.drawable.edit_text_error, null)
+        );
+        editText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+        textView.setHeight(54);
+        textView.setVisibility(View.VISIBLE);
+        textView.setText(string);
+    }
+
+    // Method to hide one of the errors defined above
+
+    public void hideError(EditText editText, TextView textView){
+        editText.setBackground(
+                ResourcesCompat.getDrawable(getResources(), R.drawable.edit_text_style, null)
+        );
+        editText.setCompoundDrawablesWithIntrinsicBounds(null, null,
                 ResourcesCompat.getDrawable(getResources(), R.mipmap.tick, null), null);
+        textView.setHeight(16);
+        textView.setVisibility(View.INVISIBLE);
     }
 
-    public void hideTick(TextView textView){
-        textView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-    }
+    // Method to set the error texts invisible and set the default height
 
     public void setErrorTextsDefault(){
-        nameText.setHeight(16);
-        nameText.setVisibility(View.INVISIBLE);
-        emailText.setHeight(16);
-        emailText.setVisibility(View.INVISIBLE);
-        passwordText.setHeight(16);
-        passwordText.setVisibility(View.INVISIBLE);
-        confirmPasswordText.setHeight(16);
-        confirmPasswordText.setVisibility(View.INVISIBLE);
+        nameError.setHeight(16);
+        nameError.setVisibility(View.INVISIBLE);
+        emailError.setHeight(16);
+        emailError.setVisibility(View.INVISIBLE);
+        passwordError.setHeight(16);
+        passwordError.setVisibility(View.INVISIBLE);
+        confirmPasswordError.setHeight(16);
+        confirmPasswordError.setVisibility(View.INVISIBLE);
     }
 }

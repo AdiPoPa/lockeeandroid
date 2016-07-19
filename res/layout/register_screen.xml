@@ -27,7 +27,7 @@
             android:textColor="@color/white"
             android:id="@+id/registerWelcomeText"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="30dp" />
+            android:layout_marginBottom="45dp" />
         <EditText
             android:id="@+id/nameField"
             android:layout_width="fill_parent"
@@ -46,7 +46,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Small Text"
-            android:id="@+id/nameText"
+            android:id="@+id/nameError"
             android:textColor="@color/error"
             android:layout_marginStart="5dp"
             android:textStyle="italic"/>
@@ -70,7 +70,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Small Text"
-            android:id="@+id/emailText"
+            android:id="@+id/emailError"
             android:textColor="@color/error"
             android:layout_marginStart="5dp"
             android:textStyle="italic"/>
@@ -94,7 +94,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Small Text"
-            android:id="@+id/passwordText"
+            android:id="@+id/passwordError"
             android:textColor="@color/error"
             android:layout_marginStart="5dp"
             android:textStyle="italic"/>
@@ -118,7 +118,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Small Text"
-            android:id="@+id/confirmPasswordText"
+            android:id="@+id/confirmPasswordError"
             android:textColor="@color/error"
             android:layout_marginStart="5dp"
             android:textStyle="italic"/>
@@ -131,9 +131,22 @@
             android:textSize="16sp"
             android:id="@+id/termsCheckBox"
             android:layout_gravity="center_horizontal"
-            app:buttonTint="@color/colorAccent"
             android:checked="false"
+            app:buttonTint="@color/colorAccent"
             android:layout_marginTop="5dp"/>
+
+        <android.support.v7.widget.AppCompatCheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/terms"
+            android:textColor="@color/error"
+            android:textSize="16sp"
+            android:id="@+id/errorCheckBox"
+            android:layout_gravity="center_horizontal"
+            android:checked="false"
+            app:buttonTint="@color/error"
+            android:layout_marginTop="5dp"
+            android:visibility="gone"/>
 
         <Button
             android:layout_width="96dp"
@@ -145,7 +158,7 @@
             android:id="@+id/registerButton"
             android:layout_gravity="center_horizontal"
             android:background="@drawable/button_style"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="20dp"
             android:onClick="onRegister" />
 
     </LinearLayout>

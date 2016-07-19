@@ -156,14 +156,12 @@ public class BackgroundWorker extends AsyncTask<String, Void, String> {
                 }, 250);
                 break;
             }
-            case "register success": {
-
+            case "register success":
+                alertDialog.show();
                 break;
-            }
-            case "error": {
-
+            default:
+                alertDialog.show();
                 break;
-            }
         }
     }
 
