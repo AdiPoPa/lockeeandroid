@@ -18,7 +18,7 @@ import java.net.URLEncoder;
 public class VerifyWorker extends AsyncTask<String, Integer, String> {
 
     TextWatcher watcher;
-    static String emailStatus = "email available";
+    public static String emailStatus = "email available";
 
     public VerifyWorker(TextWatcher textWatcher) {
         watcher = textWatcher;
@@ -72,12 +72,7 @@ public class VerifyWorker extends AsyncTask<String, Integer, String> {
 
     @Override
     protected void onPostExecute(String result) {
-        if(result.equals("email available")) {
             emailStatus = result;
-        }
-        else {
-            emailStatus = result;
-        }
     }
 
     @Override

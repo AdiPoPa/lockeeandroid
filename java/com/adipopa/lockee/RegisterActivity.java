@@ -1,6 +1,7 @@
 package com.adipopa.lockee;
 
 
+import android.content.Intent;
 import android.os.Handler;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -18,11 +20,14 @@ public class RegisterActivity extends AppCompatActivity {
     EditText nameField, emailField, passwordField, confirmPasswordField;
     TextView nameError, emailError, passwordError, confirmPasswordError;
     CheckBox termsCheckBox, errorCheckBox;
+    LinearLayout linearLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register_screen);
+
+        linearLayout = (LinearLayout) findViewById(R.id.LinearLayout);
 
         nameField = (EditText) findViewById(R.id.nameField);
         emailField = (EditText) findViewById(R.id.emailField);
@@ -70,7 +75,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String email = emailField.getText().toString();
-                if (email.equals("")) {
+                if (email.isEmpty()) {
                     emptyError(emailField, emailError);
                 } else if (!isEmailValid(email)) {
                     showError(emailField, emailError, "Please type a valid email address");
@@ -82,10 +87,10 @@ public class RegisterActivity extends AppCompatActivity {
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            if (VerifyWorker.emailStatus.equals("email available")) {
-                                hideError(emailField, emailError);
-                            } else {
+                            if (VerifyWorker.emailStatus.equals("email not available")) {
                                 showError(emailField, emailError, "This email is associated with another account");
+                            } else {
+                                hideError(emailField, emailError);
                             }
                         }
                     }, 500);
@@ -123,7 +128,7 @@ public class RegisterActivity extends AppCompatActivity {
                     showError(passwordField, passwordError, "Your password must not contain only small letters");
                 } else if (password.matches("[0-9]+")) {
                     showError(passwordField, passwordError, "Your password must contain at least a letter");
-                } else {
+                } else if (password.length() >= 8){
                     hideError(passwordField, passwordError);
                 }
             }
@@ -184,6 +189,8 @@ public class RegisterActivity extends AppCompatActivity {
         String confirmPassword = confirmPasswordField.getText().toString();
         String type = "register";
 
+        linearLayout.requestFocus();
+
         if(name.isEmpty()){
             emptyError(nameField, nameError);
         }
@@ -205,7 +212,28 @@ public class RegisterActivity extends AppCompatActivity {
                 !name.isEmpty() && !email.isEmpty() && !password.isEmpty() && !confirmPassword.isEmpty()){
             BackgroundWorker backgroundWorker = new BackgroundWorker(this);
             backgroundWorker.execute(type, name, email, password, confirmPassword);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (BackgroundWorker.registerStatus.equals("success")) {
+                        new Handler().postDelayed(new Runnable(){
+                            @Override
+                            public void run() {
+                                SaveSharedPreference.setLoginStatus(RegisterActivity.this, "logged in");
+                                MainActivity.registerNotification = "show";
+                                Intent i = new Intent(RegisterActivity.this, MainActivity.class);
+                                startActivity(i);
+                                finish();
+                            }
+                        }, 200);
+                    }
+                }
+            }, 1000);
         }
+    }
+
+    public void onReleaseFocus(View view){
+        linearLayout.requestFocus();
     }
 
     // Method to check if email field is valid
@@ -221,8 +249,7 @@ public class RegisterActivity extends AppCompatActivity {
                 ResourcesCompat.getDrawable(getResources(), R.drawable.edit_text_error, null)
         );
         editText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-        textView.setHeight(16);
-        textView.setVisibility(View.INVISIBLE);
+        textView.setVisibility(View.GONE);
     }
 
     // Method to show a error with a custom string message
@@ -232,7 +259,6 @@ public class RegisterActivity extends AppCompatActivity {
                 ResourcesCompat.getDrawable(getResources(), R.drawable.edit_text_error, null)
         );
         editText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-        textView.setHeight(54);
         textView.setVisibility(View.VISIBLE);
         textView.setText(string);
     }
@@ -245,20 +271,15 @@ public class RegisterActivity extends AppCompatActivity {
         );
         editText.setCompoundDrawablesWithIntrinsicBounds(null, null,
                 ResourcesCompat.getDrawable(getResources(), R.mipmap.tick, null), null);
-        textView.setHeight(16);
-        textView.setVisibility(View.INVISIBLE);
+        textView.setVisibility(View.GONE);
     }
 
     // Method to set the error texts invisible and set the default height
 
     public void setErrorTextsDefault(){
-        nameError.setHeight(16);
-        nameError.setVisibility(View.INVISIBLE);
-        emailError.setHeight(16);
-        emailError.setVisibility(View.INVISIBLE);
-        passwordError.setHeight(16);
-        passwordError.setVisibility(View.INVISIBLE);
-        confirmPasswordError.setHeight(16);
-        confirmPasswordError.setVisibility(View.INVISIBLE);
+        nameError.setVisibility(View.GONE);
+        emailError.setVisibility(View.GONE);
+        passwordError.setVisibility(View.GONE);
+        confirmPasswordError.setVisibility(View.GONE);
     }
 }

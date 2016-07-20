@@ -1,12 +1,7 @@
 package com.adipopa.lockee;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
 import android.os.AsyncTask;
-import android.os.Handler;
-import android.view.Gravity;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -23,10 +18,9 @@ import java.net.URLEncoder;
 
 public class BackgroundWorker extends AsyncTask<String, Void, String> {
 
-    Intent i;
-    AlertDialog alertDialog;
-    TextView myMsg;
     Context context;
+    public static String loginStatus;
+    public static String registerStatus;
 
     public BackgroundWorker(Context ctx) {
         context = ctx;
@@ -116,51 +110,22 @@ public class BackgroundWorker extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onPreExecute() {
-        i = new Intent(context, MainActivity.class);
-        alertDialog = new AlertDialog.Builder(context).create();
-        alertDialog.setTitle("Status");
-        myMsg = new TextView(context);
-        myMsg.setHeight(150);
-        myMsg.setGravity(Gravity.CENTER);
-        myMsg.setTextSize(18);
-        myMsg.setTextColor(Color.BLACK);
+        super.onPreExecute();
     }
 
     @Override
     protected void onPostExecute(String result) {
         switch (result) {
             case "login success": {
-                context.startActivity(i);
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        LoginActivity.emailField.setText("");
-                        LoginActivity.passwordField.setText("");
-                        LoginActivity.emailField.requestFocus();
-                    }
-                }, 250);
-                break;
-            }
-            case "login not success": {
-                myMsg.setText(R.string.wrongLogin);
-                alertDialog.setView(myMsg);
-                alertDialog.show();
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        LoginActivity.passwordField.setText("");
-                        LoginActivity.passwordField.requestFocus();
-                    }
-                }, 250);
+                loginStatus = "success";
                 break;
             }
             case "register success":
-                alertDialog.show();
+                registerStatus = "success";
                 break;
             default:
-                alertDialog.show();
+                loginStatus = "error";
+                registerStatus = "error";
                 break;
         }
     }

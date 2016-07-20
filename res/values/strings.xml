@@ -2,10 +2,10 @@
     <string name="app_name">Lockee</string>
     <string name="sign_in">Sign In</string>
     <string name="welcome">Welcome</string>
-    <string name="register"><u>I want to register...</u></string>
+    <string name="register"><b>Create an account</b></string>
     <string name="email">Email</string>
     <string name="password">Password</string>
-    <string name="own_code"><u>I have a code...</u></string>
+    <string name="own_code"><b>I have a code</b></string>
     <string name="terms">I agree to the terms and conditions</string>
     <string name="registerWelcome">Create an account</string>
     <string name="registerButton">Register</string>
@@ -19,4 +19,8 @@
     <string name="termsNotChecked">Please accept the terms and conditions</string>
     <string name="confirmPasswordWrong">Please confirm the password</string>
     <string name="doubleRegister">An account with this email already exists</string>
+    <string name="forgotPassword">Forgot your password?</string>
+    <string name="logout">Logout</string>
+    <string name="options_menu">Options menu</string>
+    <string name="register_successful">Register successful</string>
 </resources>

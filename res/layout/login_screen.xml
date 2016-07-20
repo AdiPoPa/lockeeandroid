@@ -6,7 +6,13 @@
     android:gravity="center"
     android:orientation="vertical"
     android:padding="10dp"
-    android:weightSum="1">
+    android:weightSum="1"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:onClick="onReleaseFocus"
+    android:id="@+id/LinearLayout">
+
+    <requestFocus />
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -26,34 +32,94 @@
             android:id="@+id/welcomeText"
             android:textSize="32sp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="70dp"
-            android:layout_marginTop="45dp" />
+            android:layout_marginBottom="60dp"
+            android:layout_marginTop="35dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Small Text"
+            android:id="@+id/loginError"
+            android:textColor="@color/error"
+            android:layout_marginEnd="5dp"
+            android:textStyle="italic"
+            android:layout_gravity="right" />
 
         <EditText
             android:id="@+id/emailField"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
             android:background="@drawable/edit_text_style"
             android:hint="@string/hint_email"
             android:inputType="textEmailAddress"
             android:padding="10dp"
             android:singleLine="true"
             android:textColor="@color/white"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="3dp"
             android:textColorHint="@color/input_login_hint" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Small Text"
+            android:id="@+id/emailError"
+            android:textColor="@color/error"
+            android:layout_marginStart="5dp"
+            android:textStyle="italic"/>
 
         <EditText
             android:id="@+id/passwordField"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
             android:background="@drawable/edit_text_style"
             android:hint="@string/hint_password"
             android:inputType="textPassword"
             android:padding="10dp"
             android:singleLine="true"
             android:textColor="@color/white"
-            android:textColorHint="@color/input_login_hint" />
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="3dp"
+            android:textColorHint="@color/input_login_hint"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/own_code"
+                android:textColor="@color/colorAccent"
+                android:textIsSelectable="false"
+                android:id="@+id/textView"
+                android:clickable="true"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="5dp"
+                android:gravity="left"
+                android:layout_gravity="left"
+                android:layout_weight="1"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/register"
+                android:textColor="@color/colorAccent"
+                android:textIsSelectable="false"
+                android:id="@+id/register"
+                android:gravity="right"
+                android:clickable="true"
+                android:layout_gravity="right"
+                android:layout_weight="1"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
 
         <Button
             android:layout_width="96dp"
@@ -68,30 +134,20 @@
             android:layout_marginTop="25dp"
             android:onClick="onLogin"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/register"
-            android:textColor="@color/white"
-            android:textIsSelectable="false"
-            android:id="@+id/register"
-            android:clickable="true"
-            android:layout_gravity="bottom|end"
-            android:layout_marginTop="100dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/own_code"
-            android:textColor="@color/white"
-            android:textIsSelectable="false"
-            android:id="@+id/textView"
-            android:clickable="true"
-            android:layout_gravity="end"
-            android:layout_marginTop="3dp"
-            android:layout_marginBottom="5dp"/>
     </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/forgotPassword"
+        android:textColor="@color/colorAccent"
+        android:textIsSelectable="false"
+        android:id="@+id/forgotPassword"
+        android:gravity="right"
+        android:clickable="true"
+        android:layout_marginTop="65dp"
+        android:layout_marginRight="10dp"
+        android:layout_gravity="right" />
 
 </LinearLayout>
