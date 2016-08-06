@@ -3,6 +3,7 @@
 android:id="@+id/mainLayout"
 android:layout_width="fill_parent"
 android:layout_height="fill_parent"
+android:background="@color/bg_register"
 android:orientation="vertical">
 
 <LinearLayout
@@ -32,6 +33,15 @@ android:orientation="vertical">
     android:id="@+id/mainList"
     android:layout_width="match_parent"
     android:layout_height="0dp"
-    android:layout_weight="1" />
+    android:layout_weight="1"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/switchButton"
+        android:id="@+id/switchButton"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:onClick="onSwitch" />
 
 </LinearLayout>
