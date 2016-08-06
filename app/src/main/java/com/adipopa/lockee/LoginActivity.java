@@ -125,13 +125,33 @@ public class LoginActivity extends AppCompatActivity {
         register.setOnClickListener(
                 new Button.OnClickListener(){
                     public void onClick(View v){
-                        register.setTextColor(Color.GRAY);
+                        register.setTextColor(Color.parseColor("#3F51B5"));
                         new Handler().postDelayed(new Runnable(){
                             @Override
                             public void run() {
                                 register.setTextColor(Color.parseColor("#4799E8"));
                                 Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
                                 startActivity(i);
+                            }
+                        }, 200);
+                    }
+                }
+        );
+
+        final TextView guest = (TextView)findViewById(R.id.guest);
+
+        guest.setOnClickListener(
+                new Button.OnClickListener(){
+                    public void onClick(View v){
+                        guest.setTextColor(Color.parseColor("#3F51B5"));
+                        new Handler().postDelayed(new Runnable(){
+                            @Override
+                            public void run() {
+                                guest.setTextColor(Color.parseColor("#4799E8"));
+                                SaveSharedPreference.setLoginStatus(LoginActivity.this, "logged in");
+                                Intent i = new Intent(LoginActivity.this, MainActivity.class);
+                                startActivity(i);
+                                finish();
                             }
                         }, 200);
                     }
