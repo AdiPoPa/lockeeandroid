@@ -1,5 +1,4 @@
 # Lockee for Android
-
 The app is a part of our IoT project designed for mobile access to our server, database and remote control of Arduino.
 
 # Changelog
