@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="C:\Users\adypo\AndroidStudioProjects\Lockee\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\24.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="24.0.0"
+        sha1="0874286cc2fd88d54fdf130e9d5372730da6de97">
+        <dex dex="C:\Users\adypo\AndroidStudioProjects\Lockee\app\build\intermediates\pre-dexed\debug\com.android.support-appcompat-v7-24.0.0_8574e531f489ea3fd0243c71b938a5ce2818b8f5.jar" />
+    </item>
+    <item
+        jar="C:\Users\adypo\AndroidStudioProjects\Lockee\app\build\intermediates\exploded-aar\com.android.support\support-v4\24.0.0\jars\libs\internal_impl-24.0.0.jar"
+        jumboMode="false"
+        revision="24.0.0"
+        sha1="fcaf463e10e69c1923ccf1edeba3b4196d239e00">
+        <dex dex="C:\Users\adypo\AndroidStudioProjects\Lockee\app\build\intermediates\pre-dexed\debug\internal_impl-24.0.0_e803b3dbde36604c69870f3c73475d6fd8473b70.jar" />
+    </item>
+    <item
+        jar="C:\Users\adypo\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\24.0.0\support-annotations-24.0.0.jar"
+        jumboMode="false"
+        revision="24.0.0"
+        sha1="2943c74db6d4346ab8c6531adac91fa05c137c40">
+        <dex dex="C:\Users\adypo\AndroidStudioProjects\Lockee\app\build\intermediates\pre-dexed\debug\support-annotations-24.0.0_b87a5f43aae127e126261f74298b7f7f1c1e8379.jar" />
+    </item>
+    <item
+        jar="C:\Users\adypo\AndroidStudioProjects\Lockee\app\build\intermediates\exploded-aar\com.android.support\animated-vector-drawable\24.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="24.0.0"
+        sha1="e70f608219ed6b974644c333249ab2bb7b71de98">
+        <dex dex="C:\Users\adypo\AndroidStudioProjects\Lockee\app\build\intermediates\pre-dexed\debug\com.android.support-animated-vector-drawable-24.0.0_57239d654f04594694488666f462fce30c11601c.jar" />
+    </item>
+    <item
+        jar="C:\Users\adypo\AndroidStudioProjects\Lockee\app\build\intermediates\exploded-aar\com.android.support\support-vector-drawable\24.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="24.0.0"
+        sha1="3bd97cfefd783e9de1dd1c30574a6adb44b4409b">
+        <dex dex="C:\Users\adypo\AndroidStudioProjects\Lockee\app\build\intermediates\pre-dexed\debug\com.android.support-support-vector-drawable-24.0.0_d75395a0aad593987313760576e9d0b72e272189.jar" />
+    </item>
+    <item
+        jar="C:\Users\adypo\AndroidStudioProjects\Lockee\app\build\intermediates\exploded-aar\com.android.support\support-v4\24.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="24.0.0"
+        sha1="2f7e6e2dad1bccaf68a8820820adc6c0d5b96d37">
+        <dex dex="C:\Users\adypo\AndroidStudioProjects\Lockee\app\build\intermediates\pre-dexed\debug\com.android.support-support-v4-24.0.0_efb7a859cabee023d13fcdda47c9540a259a2a92.jar" />
+    </item>
+    <item
+        jar="C:\Users\adypo\AndroidStudioProjects\Lockee\app\build\intermediates\exploded-aar\pl.droidsonroids.gif\android-gif-drawable\1.1.17\jars\classes.jar"
+        jumboMode="false"
+        revision="24.0.0"
+        sha1="7f8c6fd043a9c060badf3fa9b77e51c422af0a8b">
+        <dex dex="C:\Users\adypo\AndroidStudioProjects\Lockee\app\build\intermediates\pre-dexed\debug\pl.droidsonroids.gif-android-gif-drawable-1.1.17_9903d4e20b13cadc9a48a8f2ace8d43ebf795afe.jar" />
+    </item>
+
+</items>
