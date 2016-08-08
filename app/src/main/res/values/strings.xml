@@ -23,4 +23,7 @@
     <string name="logout">Logout</string>
     <string name="options_menu">Options menu</string>
     <string name="register_successful">Register successful</string>
+    <string name="switchButton">switch</string>
+    <string name="maintenance">Server currently in maintenance</string>
+    <string name="nolocks">You have no locks associated\n with this account</string>
 </resources>
