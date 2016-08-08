@@ -198,7 +198,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
             }
-        }, 1000);
+        }, 750);
     }
 
     public void onReleaseFocus(View view){
