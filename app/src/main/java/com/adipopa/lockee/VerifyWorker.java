@@ -1,6 +1,5 @@
 package com.adipopa.lockee;
 
-
 import android.os.AsyncTask;
 import android.text.TextWatcher;
 
@@ -18,7 +17,7 @@ import java.net.URLEncoder;
 public class VerifyWorker extends AsyncTask<String, Integer, String> {
 
     TextWatcher watcher;
-    public static String emailStatus = "email available";
+    public static String emailStatus;
 
     public VerifyWorker(TextWatcher textWatcher) {
         watcher = textWatcher;
@@ -27,7 +26,7 @@ public class VerifyWorker extends AsyncTask<String, Integer, String> {
     @Override
     protected String doInBackground(String... params) {
         String type = params[0];
-        String verify_url = "https://lockee-app-adipopa.c9users.io/verify.php";
+        String verify_url = "https://lockee-andrei-b.c9users.io/portal/android/verify_register/";
         if (!verify_url.isEmpty()) {
             if (type.equals("verify")) {
                 try {
@@ -44,7 +43,6 @@ public class VerifyWorker extends AsyncTask<String, Integer, String> {
                     bufferedWriter.flush();
                     bufferedWriter.close();
                     outputStream.close();
-
                     InputStream inputStream = httpURLConnection.getInputStream();
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
                     String result = "";
@@ -56,7 +54,6 @@ public class VerifyWorker extends AsyncTask<String, Integer, String> {
                     inputStream.close();
                     httpURLConnection.disconnect();
                     return result;
-
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
