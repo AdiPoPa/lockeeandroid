@@ -29,7 +29,18 @@ android:orientation="vertical">
 
 </LinearLayout>
 
-<ListView
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/nolocks"
+        android:gravity="center_horizontal"
+        android:layout_margin="15dp"
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone"
+        android:id="@+id/noLocks" />
+
+    <ListView
     android:id="@+id/mainList"
     android:layout_width="match_parent"
     android:layout_height="0dp"
