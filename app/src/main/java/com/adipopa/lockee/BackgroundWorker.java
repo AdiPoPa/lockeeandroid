@@ -2,7 +2,6 @@ package com.adipopa.lockee;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.widget.TextView;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -29,8 +28,8 @@ public class BackgroundWorker extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... params) {
         String type = params[0];
-        String login_url = "https://lockee-app-adipopa.c9users.io/login.php";
-        String register_url = "https://lockee-app-adipopa.c9users.io/register.php";
+        String login_url = "https://lockee-andrei-b.c9users.io/portal/android/login/";
+        String register_url = "https://lockee-andrei-b.c9users.io/portal/android/register/";
         if (!login_url.isEmpty() && !register_url.isEmpty()) {
             if(type.equals("login")) {
                 // This is the login request
@@ -50,7 +49,6 @@ public class BackgroundWorker extends AsyncTask<String, Void, String> {
                     bufferedWriter.flush();
                     bufferedWriter.close();
                     outputStream.close();
-
                     InputStream inputStream = httpURLConnection.getInputStream();
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
                     String result = "";
@@ -62,7 +60,6 @@ public class BackgroundWorker extends AsyncTask<String, Void, String> {
                     inputStream.close();
                     httpURLConnection.disconnect();
                     return result;
-
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -134,6 +131,5 @@ public class BackgroundWorker extends AsyncTask<String, Void, String> {
     protected void onProgressUpdate(Void... values) {
         super.onProgressUpdate(values);
     }
-
 
 }
