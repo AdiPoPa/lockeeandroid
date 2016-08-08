@@ -5,10 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-public class CustomAdapter extends ArrayAdapter<Data> {
+public class LocksListAdapter extends ArrayAdapter<Data> {
 
     public CustomAdapter(Context context, Data[] datas) {
         super(context, R.layout.main_list, datas);
@@ -25,12 +24,14 @@ public class CustomAdapter extends ArrayAdapter<Data> {
         // Lookup view for data population
 
         // Populate the data into the template view using the data object
+        
+        TextView nickname = (TextView) convertView.findViewById(R.id.nicknameText);
+        TextView shareID = (TextView) convertView.findViewById(R.id.shareIDText);
+        TextView is_open = (TextView) convertView.findViewById(R.id.statusText);
 
-        TextView cityText = (TextView) convertView.findViewById(R.id.cityText);
-        TextView addressText = (TextView) convertView.findViewById(R.id.addressText);
-
-        cityText.setText(data.city);
-        addressText.setText(data.address);
+        nickname.setText(data.nickname);
+        shareID.setText(data.shareID);
+        is_open.setText(data.is_open);
 
         // Return the completed view to render on screen
         return convertView;
