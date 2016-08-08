@@ -1,6 +1,5 @@
 package com.adipopa.lockee;
 
-
 import android.content.Intent;
 import android.os.Handler;
 import android.support.v4.content.res.ResourcesCompat;
@@ -79,15 +78,13 @@ public class RegisterActivity extends AppCompatActivity {
                     emptyError(emailField, emailError);
                 } else if (!isEmailValid(email)) {
                     showError(emailField, emailError, "Please type a valid email address");
-                }
-                else {
+                } else { // TODO: Make the Listener wait after finish typing
                     VerifyWorker verifyWorker = new VerifyWorker(this);
                     verifyWorker.execute("verify", email);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
+                    new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            if (VerifyWorker.emailStatus.equals("email not available")) {
+                            if (VerifyWorker.emailStatus.equals("email already taken")) {
                                 showError(emailField, emailError, "This email is associated with another account");
                             } else {
                                 hideError(emailField, emailError);
@@ -168,6 +165,60 @@ public class RegisterActivity extends AppCompatActivity {
 
             }
         });
+        
+        nameField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(!b){
+                    String email = nameField.getText().toString();
+                    if(email.isEmpty()){
+                        emptyField(nameField);
+                    }
+                }
+            }
+        });
+
+        emailField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(!b){
+                    String email = emailField.getText().toString();
+                    if(email.isEmpty()){
+                        emptyField(emailField);
+                    }
+                }
+            }
+        });
+
+        passwordField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(!b){
+                    String password = passwordField.getText().toString();
+                    if(password.isEmpty()){
+                        emptyField(passwordField);
+                    }
+                    else{
+                        hideEmptyError(passwordField);
+                    }
+                }
+            }
+        });
+
+        confirmPasswordField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(!b){
+                    String password = confirmPasswordField.getText().toString();
+                    if(password.isEmpty()){
+                        emptyField(confirmPasswordField);
+                    }
+                    else{
+                        hideEmptyError(confirmPasswordField);
+                    }
+                }
+            }
+        });
 
         errorCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -228,7 +279,7 @@ public class RegisterActivity extends AppCompatActivity {
                         }, 200);
                     }
                 }
-            }, 1000);
+            }, 750);
         }
     }
 
@@ -250,6 +301,23 @@ public class RegisterActivity extends AppCompatActivity {
         );
         editText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
         textView.setVisibility(View.GONE);
+    }
+    
+    public void emptyField(EditText editText){
+        editText.setBackground(
+                ResourcesCompat.getDrawable(getResources(), R.drawable.edit_text_error, null)
+        );
+        editText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+    }
+    
+    // Method to hide the error in case a field is empty
+
+    public void hideEmptyError(EditText editText){
+        editText.setBackground(
+                ResourcesCompat.getDrawable(getResources(), R.drawable.edit_text_style, null)
+        );
+        editText.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                ResourcesCompat.getDrawable(getResources(), R.mipmap.tick, null), null);
     }
 
     // Method to show a error with a custom string message
