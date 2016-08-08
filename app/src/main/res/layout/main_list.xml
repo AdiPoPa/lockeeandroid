@@ -17,9 +17,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
+        android:text="nickname"
         android:textColor="@color/white"
-        android:id="@+id/cityText"
+        android:id="@+id/nicknameText"
         android:layout_alignParentTop="true"
         android:layout_toEndOf="@+id/listIcon"
         android:layout_marginTop="5dp" />
@@ -28,9 +28,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Medium Text"
+        android:text="shareID"
         android:textColor="@color/input_login_hint"
-        android:id="@+id/addressText"
-        android:layout_below="@+id/cityText"
-        android:layout_alignStart="@+id/cityText" />
+        android:id="@+id/shareIDText"
+        android:layout_below="@+id/listIcon"
+        android:layout_alignStart="@+id/nicknameText" />
+        
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="status"
+        android:textColor="@color/input_login_hint"
+        android:id="@+id/statusText"
+        android:layout_above="@+id/shareIDText"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="24dp" />
 </RelativeLayout>
