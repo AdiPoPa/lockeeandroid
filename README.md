@@ -3,6 +3,9 @@ The app is a part of our IoT project designed for mobile access to our server, d
 
 # Changelog
 
+## (09/08/2016) [v 1.0.4] - Additions and updated features
+* Changed the method of requesting the list of locks from an Array of Strings to a JSONArray
+
 ## (08/08/2016) [v 1.0.3] - Additions and updated features
 * Request of the user's locks from the database
 * Added a button for switching the lock's state
