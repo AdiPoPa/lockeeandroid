@@ -258,62 +258,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
-    
-    // Method to acquire the lock list from the database
-
-    public void getList(String email) {
-        String type = "getlist";
-        LocksWorker locksWorker = new LocksWorker(this);
-        locksWorker.execute(type, email);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                String cardinal = "";
-                int i = 0;
-                while (LocksWorker.list[i] != '#') {
-                    cardinal += LocksWorker.list[i];
-                    i++;
-                }
-                i++;
-                int cardinal_parse = Integer.parseInt(cardinal);
-                if (cardinal_parse > 0) {
-                    for (int n = 1; n <= cardinal_parse; n++) {
-                        String nickname = "";
-                        String shareID = "";
-                        String is_open = "";
-                        while (LocksWorker.list[i] != '#') {
-                            nickname += LocksWorker.list[i];
-                            i++;
-                        }
-                        i++;
-                        while (LocksWorker.list[i] != '#') {
-                            shareID += LocksWorker.list[i];
-                            i++;
-                        }
-                        i++;
-                        while (LocksWorker.list[i] != '#') {
-                            is_open += LocksWorker.list[i];
-                            i++;
-                        }
-                        i++;
-                        Data data = new Data(nickname, shareID, is_open);
-                        dataList.add(data);
-                    }
-                } else {
-                    noLocks.setVisibility(View.VISIBLE);
-                }
-
-                // 08.08.2016 - 22:51 : Am rezolvaaaaat, trebuia tot in handler... ca handlerul ruleaza in paralel cu interfata, Jeeeesus
-
-                simpleArray = new Data[dataList.size()];
-                dataList.toArray(simpleArray);
-
-                ListAdapter listAdapter = new LocksListAdapter(MainActivity.this, simpleArray);
-
-                mainList.setAdapter(listAdapter);
-            }
-        }, 1000);
-    }
 
     // Method to require double press on the back button to close the app
 
