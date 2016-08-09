@@ -2,9 +2,11 @@ package com.adipopa.lockee;
 
 import android.animation.Animator;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,13 +16,18 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,9 +35,11 @@ public class MainActivity extends AppCompatActivity {
     TextView registerNotif;
     Button switchButton;
     ListView mainList;
-    TextView noLocks;
-    List<Data> dataList;
-    Data[] simpleArray;
+    
+    private static final String TAG_LOCKINFO = "locks_info";
+    private static final String TAG_NICKNAME = "nickname";
+    private static final String TAG_SHARE_ID = "share_id";
+    private static final String TAG_IS_OPENED = "is_opened";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,9 +56,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(i);
             finish();
         }
-        
-        String email = "adipopa@gmail.com";
-        getList(email);
 
         registerNotif = (TextView) findViewById(R.id.registerNotification);
         switchButton = (Button) findViewById(R.id.switchButton);
@@ -62,9 +68,9 @@ public class MainActivity extends AppCompatActivity {
         }
         
         mainList = (ListView) findViewById(R.id.mainList);
-        noLocks = (TextView) findViewById(R.id.noLocks);
-
-        dataList = new ArrayList<>();
+        
+        String email = "adipopa@gmail.com";
+        new getLocks().execute(email);
 
         mainList.setOnItemClickListener(
                 new AdapterView.OnItemClickListener(){
@@ -75,7 +81,94 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
+    }
+    
+    private class getLocks extends AsyncTask<String, Void, Void> {
 
+        // Hashmap for ListView
+        ArrayList<HashMap<String, String>> locksList;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(String... params) {
+            // Creating service handler class instance
+            LocksListWorker webreq = new LocksListWorker();
+
+            // Making a request to url and getting response
+            String locks_url = "https://lockee-cloned-andrei-b.c9users.io/portal/android/get_locks/";
+
+            String email = params[0];
+
+            String jsonStr = webreq.makeWebServiceCall(locks_url, LocksListWorker.POST, email);
+
+            Log.d("Response: ", "> " + jsonStr);
+
+            locksList = ParseJSON(jsonStr);
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            // Dismiss the progress dialog
+            /**
+             * Updating parsed JSON data into ListView
+             * */
+
+            ListAdapter adapter = new SimpleAdapter(
+                    MainActivity.this, locksList,
+                    R.layout.main_list, new String[]{TAG_NICKNAME, TAG_SHARE_ID, TAG_IS_OPENED},
+                    new int[]{R.id.nicknameText, R.id.shareIDText, R.id.statusText});
+
+            mainList.setAdapter(adapter);
+        }
+
+    }
+
+    private ArrayList<HashMap<String, String>> ParseJSON(String json) {
+        if (json != null) {
+            try {
+                // Hashmap for ListView
+                ArrayList<HashMap<String, String>> locksList = new ArrayList<>();
+
+                JSONObject jsonObj = new JSONObject(json);
+
+                // Getting JSON Array node
+                JSONArray locks = jsonObj.getJSONArray(TAG_LOCKINFO);
+
+                // looping through All Locks
+                for (int i = 0; i < locks.length(); i++) {
+                    JSONObject c = locks.getJSONObject(i);
+
+                    String nickname = c.getString(TAG_NICKNAME);
+                    String share_id = c.getString(TAG_SHARE_ID);
+                    String is_opened = c.getString(TAG_IS_OPENED);
+
+                    // tmp hashmap for single lock
+                    HashMap<String, String> lock = new HashMap<>();
+
+                    // adding each child node to HashMap key => value
+                    lock.put(TAG_NICKNAME, nickname);
+                    lock.put(TAG_SHARE_ID, share_id);
+                    lock.put(TAG_IS_OPENED, is_opened);
+
+                    // adding lock to locks list
+                    locksList.add(lock);
+                }
+                return locksList;
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null;
+            }
+        } else {
+            Log.e("ServiceHandler", "Couldn't get any data from the url");
+            return null;
+        }
     }
 
     @Override
