@@ -46,41 +46,41 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
-        if(LoginActivity.active) {
-            LoginActivity.login.finish();
-        }
+        LoginActivity loginActivity = new LoginActivity();
+        loginActivity.finish();
 
         if(SaveSharedPreference.getLoginStatus(MainActivity.this).equals("not logged"))
         {
             Intent i = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(i);
             finish();
-        }
+        } else {
 
-        registerNotif = (TextView) findViewById(R.id.registerNotification);
-        switchButton = (Button) findViewById(R.id.switchButton);
+            registerNotif = (TextView) findViewById(R.id.registerNotification);
+            switchButton = (Button) findViewById(R.id.switchButton);
+            noLocks = (TextView) findViewById(R.id.noLocks);
 
-        if(registerNotification.equals("show")){
+            if(registerNotification.equals("show")){
             registerNotif.setVisibility(View.VISIBLE);
-        }
-        else{
+            } else{
             registerNotif.setVisibility(View.GONE);
-        }
+            }
         
-        mainList = (ListView) findViewById(R.id.mainList);
+            mainList = (ListView) findViewById(R.id.mainList);
         
-        String email = "adipopa@gmail.com";
-        new getLocks().execute(email);
+            String email = "adipopa@gmail.com";
+            new getLocks().execute(email);
 
-        mainList.setOnItemClickListener(
-                new AdapterView.OnItemClickListener(){
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        ImageView listIcon = (ImageView) view.findViewById(R.id.listIcon);
-                        listIcon.setImageResource(R.mipmap.lockicon);
+            mainList.setOnItemClickListener(
+                    new AdapterView.OnItemClickListener(){
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                            ImageView listIcon = (ImageView) view.findViewById(R.id.listIcon);
+                            listIcon.setImageResource(R.mipmap.lockicon);
+                        }
                     }
-                }
-        );
+            );
+        }
     }
     
     private class getLocks extends AsyncTask<String, Void, Void> {
@@ -120,12 +120,16 @@ public class MainActivity extends AppCompatActivity {
              * Updating parsed JSON data into ListView
              * */
 
-            ListAdapter adapter = new SimpleAdapter(
-                    MainActivity.this, locksList,
-                    R.layout.main_list, new String[]{TAG_NICKNAME, TAG_SHARE_ID, TAG_IS_OPENED},
-                    new int[]{R.id.nicknameText, R.id.shareIDText, R.id.statusText});
+            if(result != null) {
+                ListAdapter adapter = new SimpleAdapter(
+                        MainActivity.this, locksList,
+                        R.layout.main_list, new String[]{TAG_NICKNAME, TAG_SHARE_ID, TAG_IS_OPENED},
+                        new int[]{R.id.nicknameText, R.id.shareIDText, R.id.statusText});
 
-            mainList.setAdapter(adapter);
+                mainList.setAdapter(adapter);
+            } else {
+                noLocks.setVisibility(View.VISIBLE);
+            }
         }
 
     }
