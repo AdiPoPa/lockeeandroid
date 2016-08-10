@@ -1,14 +1,15 @@
 package com.adipopa.lockee;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -16,23 +17,32 @@ import android.widget.TextView;
 import android.view.View;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+
 public class LoginActivity extends AppCompatActivity {
 
     EditText emailField, passwordField;
     TextView emailError, loginError;
     LinearLayout linearLayout;
-    public static Activity login;
-    static Boolean active = false;
-    MainActivity mainActivity;
+    String email;
+    String password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_screen);
-        login = this;
-        active = true;
 
-        mainActivity = new MainActivity();
+        MainActivity mainActivity = new MainActivity();
+        mainActivity.finish();
 
         emailField = (EditText) findViewById(R.id.emailField);
         passwordField = (EditText) findViewById(R.id.passwordField);
@@ -160,16 +170,60 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onLogin(View view){
-        final String email = emailField.getText().toString();
-        final String password = passwordField.getText().toString();
-        String type = "login";
-        BackgroundWorker backgroundWorker = new BackgroundWorker(this);
-        backgroundWorker.execute(type, email, password);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (BackgroundWorker.loginStatus.equals("success")) {
-                    new Handler().postDelayed(new Runnable(){
+        email = emailField.getText().toString();
+        password = passwordField.getText().toString();
+        new startLogin().execute(email, password);
+    }
+    
+    private class startLogin extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String login_url = "https://lockee-cloned-andrei-b.c9users.io/android/login/";
+            String email = params[0];
+            String password = params[1];
+            // This is the login request
+            try {
+                URL url = new URL(login_url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+                String postData = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8") + "&" +
+                        URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8");
+                bufferedWriter.write(postData);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                outputStream.close();
+                InputStream inputStream = httpURLConnection.getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
+                String result = "";
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    result += line;
+                }
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+                return result;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }   
+
+        @Override
+        protected void onPostExecute(String result) {
+            if(result != null) {
+                if(result.equals("login success")) {
+                    new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             SaveSharedPreference.setLoginStatus(LoginActivity.this, "logged in");
@@ -191,14 +245,15 @@ public class LoginActivity extends AppCompatActivity {
                         hideEmptyError(emailField);
                         passwordField.requestFocus();
                         showError(passwordField, loginError, "Please verify your input information");
-                    }
-                    else{
+                    } else {
                         showError(emailField, emailError, "Please type a valid email address");
                         showError(emailField, loginError, "Please verify your input information");
                     }
                 }
+            } else {
+                Log.e("LoginHandler", "There was an error handling the login, please check connection");
             }
-        }, 750);
+        }
     }
 
     public void onReleaseFocus(View view){
@@ -279,11 +334,5 @@ public class LoginActivity extends AppCompatActivity {
                 doubleBackToExitPressedOnce = false;
             }
         }, 2000);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        active = false;
     }
 }
