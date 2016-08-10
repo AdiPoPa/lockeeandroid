@@ -3,6 +3,11 @@ The app is a part of our IoT project designed for mobile access to our server, d
 
 # Changelog
 
+## (10/08/2016) [v 1.0.5] - Connectivity features updated and fixed issues
+* Updated the login, register and verify connectivity
+* Covered all network or server errors
+* Updated loading splash screen and case of maintenance
+
 ## (09/08/2016) [v 1.0.4] - Additions and updated features
 * Changed the method of requesting the list of locks from an Array of Strings to a JSONArray
 
