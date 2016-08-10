@@ -1,18 +1,31 @@
 package com.adipopa.lockee;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -78,19 +91,8 @@ public class RegisterActivity extends AppCompatActivity {
                     emptyError(emailField, emailError);
                 } else if (!isEmailValid(email)) {
                     showError(emailField, emailError, "Please type a valid email address");
-                } else { // TODO: Make the Listener wait after finish typing
-                    VerifyWorker verifyWorker = new VerifyWorker(this);
-                    verifyWorker.execute("verify", email);
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (VerifyWorker.emailStatus.equals("email already taken")) {
-                                showError(emailField, emailError, "This email is associated with another account");
-                            } else {
-                                hideError(emailField, emailError);
-                            }
-                        }
-                    }, 500);
+                } else {
+                    new onVerifyEmail().execute(email);
                 }
             }
 
@@ -238,7 +240,6 @@ public class RegisterActivity extends AppCompatActivity {
         String email = emailField.getText().toString();
         String password = passwordField.getText().toString();
         String confirmPassword = confirmPasswordField.getText().toString();
-        String type = "register";
 
         linearLayout.requestFocus();
 
@@ -261,25 +262,135 @@ public class RegisterActivity extends AppCompatActivity {
         }
         else if(!nameError.isShown() && !emailError.isShown() && !passwordError.isShown() && !confirmPasswordError.isShown() &&
                 !name.isEmpty() && !email.isEmpty() && !password.isEmpty() && !confirmPassword.isEmpty()){
-            BackgroundWorker backgroundWorker = new BackgroundWorker(this);
-            backgroundWorker.execute(type, name, email, password, confirmPassword);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (BackgroundWorker.registerStatus.equals("success")) {
-                        new Handler().postDelayed(new Runnable(){
-                            @Override
-                            public void run() {
-                                SaveSharedPreference.setLoginStatus(RegisterActivity.this, "logged in");
-                                MainActivity.registerNotification = "show";
-                                Intent i = new Intent(RegisterActivity.this, MainActivity.class);
-                                startActivity(i);
-                                finish();
-                            }
-                        }, 200);
-                    }
+            new startRegister().execute(name, email, password);
+        }
+    }
+    
+    private class startRegister extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String register_url = "https://lockee-cloned-andrei-b.c9users.io/android/register/";
+            String name = params[0];
+            String email = params[1];
+            String password = params[2];
+            // This is the login request
+            try {
+                URL url = new URL(register_url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+                String postData = URLEncoder.encode("name", "UTF-8") + "=" + URLEncoder.encode(name, "UTF-8") + "&" +
+                        URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8") + "&" +
+                        URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8");
+                bufferedWriter.write(postData);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                outputStream.close();
+                InputStream inputStream = httpURLConnection.getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
+                String result = "";
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    result += line;
                 }
-            }, 750);
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+                return result;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            if(result != null) {
+                if(result.equals("register success")) {
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            SaveSharedPreference.setLoginStatus(RegisterActivity.this, "logged in");
+                            MainActivity.registerNotification = "show";
+                            Intent i = new Intent(RegisterActivity.this, MainActivity.class);
+                            startActivity(i);
+                            finish();
+                        }
+                    }, 200);
+                }
+            } else {
+                Log.e("RegisterHandler", "There was an error handling the register, please check connection");
+            }
+        }
+    }
+    
+    private class onVerifyEmail extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String email = params[0];
+            String verify_url = "https://lockee-cloned-andrei-b.c9users.io/android/verify_register/";
+            try {
+                URL url = new URL(verify_url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+                String postData = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8");
+                bufferedWriter.write(postData);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                outputStream.close();
+                InputStream inputStream = httpURLConnection.getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
+                String result = "";
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    result += line;
+                }
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+                return result;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            String email = emailField.getText().toString();
+            if(result != null) {
+                if (email.isEmpty()) {
+                    emptyError(emailField, emailError);
+                } else if (!isEmailValid(email)) {
+                    showError(emailField, emailError, "Please type a valid email address");
+                } else
+                if (result.equals("email already taken")) {
+                    showError(emailField, emailError, "This email is associated with another account");
+                } else {
+                    hideError(emailField, emailError);
+                }
+            } else {
+                Log.e("VerifyHandler", "There was an error verifying the email, please check connection");
+            }
         }
     }
 
