@@ -1,23 +1,43 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+apply plugin: 'com.android.application'
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.2'
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.1"
 
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+    defaultConfig {
+        applicationId "com.adipopa.lockee"
+        minSdkVersion 19
+        targetSdkVersion 24
+        versionCode 1
+        versionName "1.0"
+
+        renderscriptTargetApi 17
+        renderscriptSupportModeEnabled true
     }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:24.1.1'
+    compile 'com.android.support:design:24.1.1'
+    compile files('libs/json-simple-1.1.1.jar')
 }
 
 allprojects {
     repositories {
-        jcenter()
+        mavenCentral()
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+dependencies {
+    compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.17'
+    compile 'com.github.d-max:spots-dialog:0.4@aar'
+    compile 'com.nhaarman.supertooltips:library:3.0.0'
 }
