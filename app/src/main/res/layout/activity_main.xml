@@ -1,58 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:id="@+id/mainLayout"
-android:layout_width="fill_parent"
-android:layout_height="fill_parent"
-android:background="@color/bg_register"
-android:orientation="vertical">
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="true"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/bg_register"
+    android:orientation="vertical"
+    android:id="@+id/mainLayout">
 
-<LinearLayout
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:layout_gravity="center_horizontal">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/bg_register"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/registerNotification"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:width="500dp"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/register_successful"
-        android:textSize="20sp"
-        android:background="@color/colorAccent"
-        android:padding="10dp"
-        android:drawableTop="@mipmap/doublearrowup"
-        android:drawablePadding="5dp"
-        android:gravity="center_horizontal"
-        android:onClick="onHideNotification"/>
+        <ListView
+            android:id="@+id/mainList"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
 
-</LinearLayout>
+    </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/nolocks"
-        android:gravity="center_horizontal"
-        android:layout_margin="15dp"
-        android:layout_gravity="center_horizontal"
-        android:visibility="gone"
-        android:id="@+id/noLocks" />
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
 
-    <ListView
-    android:id="@+id/mainList"
-    android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:layout_weight="1"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/nolocks"
+            android:textColor="@color/colorAccent"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:gravity="center_horizontal"
+            android:layout_gravity="center_horizontal|top"
+            android:visibility="gone"
+            android:id="@+id/noLocks"
+            android:layout_marginTop="35dp" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/switchButton"
-        android:id="@+id/switchButton"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="20dp"
-        android:onClick="onSwitch" />
+        <TextView
+            android:id="@+id/registerGuideText"
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:width="500dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/registerGuide"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:padding="10dp"
+            android:gravity="center"
+            android:visibility="gone"
+            android:layout_gravity="left|bottom"
+            android:layout_marginBottom="60dp"
+            android:layout_marginLeft="10dp" />
 
-</LinearLayout>
+        <com.nhaarman.supertooltips.ToolTipRelativeLayout
+            android:id="@+id/registerGuide"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal|top" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="16dp"
+            android:clickable="true"
+            android:layout_gravity="bottom|end"
+            android:scaleType="center"
+            android:src="@drawable/ic_add_black_36dp"/>
+
+    </FrameLayout>
+
+        <TextView
+            android:id="@+id/registerNotification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/register_successful"
+            android:textColor="@color/colorAccent"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:gravity="center_horizontal"
+            android:layout_gravity="center"
+            android:visibility="visible"
+            android:layout_marginBottom="35dp" />
+
+</android.support.design.widget.CoordinatorLayout>
