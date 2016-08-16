@@ -33,6 +33,7 @@ public class RegisterActivity extends AppCompatActivity {
     TextView nameError, emailError, passwordError, confirmPasswordError;
     CheckBox termsCheckBox, errorCheckBox;
     LinearLayout linearLayout;
+    String name, email, password, confirmPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,8 +64,10 @@ public class RegisterActivity extends AppCompatActivity {
                 String namePattern2 = "[A-Z]+[a-z]+ +[A-Z]+[a-z]+";
                 String namePattern3 = "[A-Z]+[a-z]+ +[A-Z]+[a-z]+ +[A-Z]+[a-z]+";
                 String namePattern4 = "[A-Z]+[a-z]+ +[A-Z]+[a-z]+ +[A-Z]+[a-z]+ +[A-Z]+[a-z]+";
-                if(name.isEmpty()){
+                if(name.isEmpty()) {
                     emptyError(nameField, nameError);
+                }else if(name.equals("Snoop Dogg")){
+                    showError(nameField, nameError, "Smoke weed everyday");
                 }else if(!name.matches(namePattern2) && !name.matches(namePattern3) && !name.matches(namePattern4)){
                     showError(nameField, nameError, "We'd like to know you, give us your real name");
                 }else{
@@ -167,7 +170,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             }
         });
-        
+
         nameField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
@@ -200,9 +203,6 @@ public class RegisterActivity extends AppCompatActivity {
                     if(password.isEmpty()){
                         emptyField(passwordField);
                     }
-                    else{
-                        hideEmptyError(passwordField);
-                    }
                 }
             }
         });
@@ -214,9 +214,6 @@ public class RegisterActivity extends AppCompatActivity {
                     String password = confirmPasswordField.getText().toString();
                     if(password.isEmpty()){
                         emptyField(confirmPasswordField);
-                    }
-                    else{
-                        hideEmptyError(confirmPasswordField);
                     }
                 }
             }
@@ -236,10 +233,10 @@ public class RegisterActivity extends AppCompatActivity {
     // Method called when the register button is pressed
 
     public void onRegister(View view){
-        String name = nameField.getText().toString();
-        String email = emailField.getText().toString();
-        String password = passwordField.getText().toString();
-        String confirmPassword = confirmPasswordField.getText().toString();
+        name = nameField.getText().toString();
+        email = emailField.getText().toString();
+        password = passwordField.getText().toString();
+        confirmPassword = confirmPasswordField.getText().toString();
 
         linearLayout.requestFocus();
 
@@ -265,7 +262,7 @@ public class RegisterActivity extends AppCompatActivity {
             new startRegister().execute(name, email, password);
         }
     }
-    
+
     private class startRegister extends AsyncTask<String, Void, String> {
 
         @Override
@@ -319,7 +316,7 @@ public class RegisterActivity extends AppCompatActivity {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            SaveSharedPreference.setLoginStatus(RegisterActivity.this, "logged in");
+                            SaveSharedPreference.setLoginStatus(RegisterActivity.this, email);
                             MainActivity.registerNotification = "show";
                             Intent i = new Intent(RegisterActivity.this, MainActivity.class);
                             startActivity(i);
@@ -332,7 +329,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
         }
     }
-    
+
     private class onVerifyEmail extends AsyncTask<String, Void, String> {
 
         @Override
@@ -413,22 +410,12 @@ public class RegisterActivity extends AppCompatActivity {
         editText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
         textView.setVisibility(View.GONE);
     }
-    
+
     public void emptyField(EditText editText){
         editText.setBackground(
                 ResourcesCompat.getDrawable(getResources(), R.drawable.edit_text_error, null)
         );
         editText.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-    }
-    
-    // Method to hide the error in case a field is empty
-
-    public void hideEmptyError(EditText editText){
-        editText.setBackground(
-                ResourcesCompat.getDrawable(getResources(), R.drawable.edit_text_style, null)
-        );
-        editText.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                ResourcesCompat.getDrawable(getResources(), R.mipmap.tick, null), null);
     }
 
     // Method to show a error with a custom string message
