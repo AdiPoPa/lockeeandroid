@@ -1,10 +1,16 @@
 package com.adipopa.lockee;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -12,13 +18,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.nhaarman.supertooltips.ToolTip;
+import com.nhaarman.supertooltips.ToolTipRelativeLayout;
+import com.nhaarman.supertooltips.ToolTipView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,13 +38,15 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class MainActivity extends AppCompatActivity {
+import dmax.dialog.SpotsDialog;
+
+public class MainActivity extends AppCompatActivity implements ToolTipView.OnToolTipViewClickedListener {
 
     public static String registerNotification = "hide";
-    TextView registerNotif;
-    Button switchButton;
     ListView mainList;
-    
+    TextView noLocks;
+    String email;
+
     private static final String TAG_LOCKINFO = "locks_info";
     private static final String TAG_NICKNAME = "nickname";
     private static final String TAG_SHARE_ID = "share_id";
@@ -45,34 +56,70 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
+
         LoginActivity loginActivity = new LoginActivity();
         loginActivity.finish();
 
-        if(SaveSharedPreference.getLoginStatus(MainActivity.this).equals("not logged"))
-        {
+        if(SaveSharedPreference.getLoginStatus(this).equals("not logged")) {
             Intent i = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(i);
             finish();
         } else {
-
-            registerNotif = (TextView) findViewById(R.id.registerNotification);
-            switchButton = (Button) findViewById(R.id.switchButton);
+            email = SaveSharedPreference.getLoginStatus(this);
             noLocks = (TextView) findViewById(R.id.noLocks);
 
-            if(registerNotification.equals("show")){
-            registerNotif.setVisibility(View.VISIBLE);
-            } else{
-            registerNotif.setVisibility(View.GONE);
+            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
+            ToolTip toolTip = new ToolTip()
+                    .withText(getString(R.string.registerGuide))
+                    .withTextColor(Color.WHITE)
+                    .withColor(ContextCompat.getColor(this, R.color.colorAccent))
+                    .withShadow()
+                    .withAnimationType(ToolTip.AnimationType.NONE);
+            ToolTipRelativeLayout toolTipRelativeLayout = (ToolTipRelativeLayout) findViewById(R.id.registerGuide);
+            final ToolTipView myToolTipView = toolTipRelativeLayout.showToolTipForView(toolTip, fab);
+            myToolTipView.setOnToolTipViewClickedListener(MainActivity.this);
+
+            TextView registerSuccessful = (TextView)findViewById(R.id.registerNotification);
+
+            if (registerNotification.equals("show")) {
+                // Custom animation on image
+                final ObjectAnimator fadeIn = ObjectAnimator.ofFloat(registerSuccessful, "alpha", 0f, 1f);
+                fadeIn.setDuration(2000);
+                final ObjectAnimator fadeOut = ObjectAnimator.ofFloat(registerSuccessful, "alpha",  1f, 0f);
+                fadeOut.setDuration(2000);
+
+                final AnimatorSet mAnimationSet = new AnimatorSet();
+
+                mAnimationSet.play(fadeIn);
+
+                mAnimationSet.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        mAnimationSet.setStartDelay(5000);
+                        mAnimationSet.play(fadeOut);
+                        mAnimationSet.start();
+                        new Handler().postDelayed(new Runnable(){
+                            @Override
+                            public void run() {
+                                mAnimationSet.end();
+                                new getLocks().execute(email);
+                            }
+                        }, 7000);
+                    }
+                });
+                mAnimationSet.start();
+            } else {
+                myToolTipView.remove();
+                new getLocks().execute(email);
+                registerSuccessful.setVisibility(View.GONE);
             }
-        
+
             mainList = (ListView) findViewById(R.id.mainList);
-        
-            String email = "adipopa@gmail.com";
-            new getLocks().execute(email);
 
             mainList.setOnItemClickListener(
-                    new AdapterView.OnItemClickListener(){
+                    new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                             ImageView listIcon = (ImageView) view.findViewById(R.id.listIcon);
@@ -80,17 +127,73 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
             );
+
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    myToolTipView.remove();
+                }
+            });
         }
     }
-    
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch(item.getItemId()){
+            case R.id.menu_logout: {
+                SaveSharedPreference.setLoginStatus(MainActivity.this, "not logged");
+                Intent i = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(i);
+                finish();
+                return true;
+            }
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public boolean onMenuOpened(int featureId, Menu menu)
+    {
+        if(featureId == Window.FEATURE_ACTION_BAR && menu != null){
+            if(menu.getClass().getSimpleName().equals("MenuBuilder")){
+                try{
+                    Method m = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
+                    m.setAccessible(true);
+                    m.invoke(menu, true);
+                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return super.onMenuOpened(featureId, menu);
+    }
+
+    @Override
+    public void onToolTipViewClicked(ToolTipView toolTipView) {
+        toolTipView.remove();
+    }
+
+    /** Async task class to get json by making HTTP call **/
+
     private class getLocks extends AsyncTask<String, Void, Void> {
 
         // Hashmap for ListView
         ArrayList<HashMap<String, String>> locksList;
 
+        android.app.AlertDialog progressDialog = new SpotsDialog(MainActivity.this, R.style.loadingDialog);
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            progressDialog.setCancelable(false);
+            progressDialog.show();
         }
 
         @Override
@@ -99,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
             LocksListWorker webreq = new LocksListWorker();
 
             // Making a request to url and getting response
-            String locks_url = "https://lockee-cloned-andrei-b.c9users.io/portal/android/get_locks/";
+            String locks_url = "https://lockee-cloned-andrei-b.c9users.io/android/get_locks/";
 
             String email = params[0];
 
@@ -115,21 +218,31 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            // Dismiss the progress dialog
-            /**
-             * Updating parsed JSON data into ListView
-             * */
+            new Handler().postDelayed(new Runnable(){
+                @Override
+                public void run() {
+                    progressDialog.dismiss();
 
-            if(result != null) {
-                ListAdapter adapter = new SimpleAdapter(
-                        MainActivity.this, locksList,
-                        R.layout.main_list, new String[]{TAG_NICKNAME, TAG_SHARE_ID, TAG_IS_OPENED},
-                        new int[]{R.id.nicknameText, R.id.shareIDText, R.id.statusText});
+                    /**
+                     * Updating parsed JSON data into ListView
+                     * */
 
-                mainList.setAdapter(adapter);
-            } else {
-                noLocks.setVisibility(View.VISIBLE);
-            }
+                    if(locksList != null) {
+                        if (locksList.size() > 0) {
+                            ListAdapter adapter = new SimpleAdapter(
+                                    MainActivity.this, locksList,
+                                    R.layout.main_list, new String[]{TAG_NICKNAME, TAG_SHARE_ID, TAG_IS_OPENED},
+                                    new int[]{R.id.nicknameText, R.id.shareIDText, R.id.statusText});
+
+                            mainList.setAdapter(adapter);
+                        } else {
+                            noLocks.setVisibility(View.VISIBLE);
+                        }
+                    } else {
+                        Log.e("LocksListHandler", "There was an error getting the list of locks, please check connection");
+                    }
+                }
+            }, 1000);
         }
 
     }
@@ -175,45 +288,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item){
-            switch(item.getItemId()){
-                case R.id.menu_logout: {
-                    SaveSharedPreference.setLoginStatus(MainActivity.this, "not logged");
-                    Intent i = new Intent(MainActivity.this, LoginActivity.class);
-                    startActivity(i);
-                    finish();
-                    return true;
-                }
-                default:
-                    return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
-    public boolean onMenuOpened(int featureId, Menu menu)
-    {
-        if(featureId == Window.FEATURE_ACTION_BAR && menu != null){
-            if(menu.getClass().getSimpleName().equals("MenuBuilder")){
-                try{
-                    Method m = menu.getClass().getDeclaredMethod(
-                            "setOptionalIconsVisible", Boolean.TYPE);
-                    m.setAccessible(true);
-                    m.invoke(menu, true);
-                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return super.onMenuOpened(featureId, menu);
-    }
-    
     public void onSwitch(View view){
         String lock_inner_id = "B55HH471C28f646G";
         String type = "switch";
@@ -235,32 +309,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }, 750);
-    }
-
-    public void onHideNotification(View view){
-        registerNotif.animate()
-                .setDuration(500)
-                .translationY(0 - registerNotif.getHeight())
-                .setListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animator) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animator) {
-                        registerNotif.setVisibility(View.GONE);
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animator) {
-
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animator) {
-                    }
-                });
     }
 
     // Method to require double press on the back button to close the app
