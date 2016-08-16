@@ -26,4 +26,5 @@
     <string name="switchButton">switch</string>
     <string name="maintenance">Server currently in maintenance</string>
     <string name="nolocks">You have no locks associated\n with this account</string>
+    <string name="registerGuide">Tap this button to add a lock</string>
 </resources>
