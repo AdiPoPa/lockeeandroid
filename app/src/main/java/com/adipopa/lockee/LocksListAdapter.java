@@ -26,10 +26,12 @@ public class LocksListAdapter extends ArrayAdapter<Data> {
         // Populate the data into the template view using the data object
         
         TextView nickname = (TextView) convertView.findViewById(R.id.nicknameText);
+        TextView lockID = (TextView) convertView.findViewById(R.id.lockIDText);
         TextView shareID = (TextView) convertView.findViewById(R.id.shareIDText);
         TextView is_open = (TextView) convertView.findViewById(R.id.statusText);
 
         nickname.setText(data.nickname);
+        lockID.setText(data.lockID);
         shareID.setText(data.shareID);
         is_open.setText(data.is_open);
 
