@@ -20,6 +20,8 @@
     <string name="confirmPasswordWrong">Please confirm the password</string>
     <string name="doubleRegister">An account with this email already exists</string>
     <string name="forgotPassword">Forgot your password?</string>
+    <string name="about">About</string>
+    <string name="settings">Settings</string>
     <string name="logout">Logout</string>
     <string name="options_menu">Options menu</string>
     <string name="register_successful">Register successful</string>
