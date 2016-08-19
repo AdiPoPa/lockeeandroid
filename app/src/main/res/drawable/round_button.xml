@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="ring"
+    android:innerRadius="0dp"
+    android:thickness="48dp"
+    android:useLevel="false"
+    android:tint="@color/bg_register">
+
+    <solid android:color="@color/bg_register"/>
+
+</shape>
