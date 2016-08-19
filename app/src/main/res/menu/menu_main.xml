@@ -8,16 +8,22 @@
         android:title=""
         android:id="@+id/empty"
         android:orderInCategory="101"
-        android:icon="@mipmap/overflow"
+        android:icon="@drawable/overflow"
         app:showAsAction="always">
         <menu>
             <item
+                android:id="@+id/menu_about"
+                android:title="@string/about"
+                android:icon="@drawable/ic_about_white_48dp"/>
+            <item
+                android:id="@+id/menu_settings"
+                android:title="@string/settings"
+                android:icon="@drawable/ic_settings_white_48dp"/>
+            <item
                 android:id="@+id/menu_logout"
                 android:title="@string/logout"
-                android:icon="@mipmap/logout"/>
+                android:icon="@drawable/ic_logout_white_48dp"/>
         </menu>
     </item>
-
-
 
 </menu>
