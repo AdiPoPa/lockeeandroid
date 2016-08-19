@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_register"
+    android:background="@color/bg_color"
     tools:context="com.adipopa.lockee.LoadingActivity">
 
     <pl.droidsonroids.gif.GifTextView
@@ -24,15 +24,27 @@
         android:layout_alignParentEnd="true"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"/>
-        
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/maintenance"
+        android:textColor="@color/white"
         android:id="@+id/maintenanceText"
         android:visibility="gone"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start in offline mode"
+        android:id="@+id/offlineButton"
+        android:layout_below="@+id/lockeeText"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"
+        android:onClick="onOfflineMode"
+        android:layout_marginTop="120dp" />
 
 </RelativeLayout>

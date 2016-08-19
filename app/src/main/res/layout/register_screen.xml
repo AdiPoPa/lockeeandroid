@@ -44,7 +44,7 @@
             android:padding="10dp"
             android:singleLine="true"
             android:textColor="@color/white"
-            android:textColorHint="@color/input_login_hint"
+            android:textColorHint="@color/input_register_hint"
             android:layout_marginBottom="3dp" />
 
         <TextView
@@ -67,7 +67,7 @@
             android:padding="10dp"
             android:singleLine="true"
             android:textColor="@color/white"
-            android:textColorHint="@color/input_login_hint"
+            android:textColorHint="@color/input_register_hint"
             android:layout_marginTop="6dp"
             android:layout_marginBottom="3dp"/>
 
@@ -91,7 +91,7 @@
             android:padding="10dp"
             android:singleLine="true"
             android:textColor="@color/white"
-            android:textColorHint="@color/input_login_hint"
+            android:textColorHint="@color/input_register_hint"
             android:layout_marginTop="6dp"
             android:layout_marginBottom="3dp"/>
 
@@ -115,7 +115,7 @@
             android:padding="10dp"
             android:singleLine="true"
             android:textColor="@color/white"
-            android:textColorHint="@color/input_login_hint"
+            android:textColorHint="@color/input_register_hint"
             android:layout_marginTop="6dp"
             android:layout_marginBottom="3dp" />
 

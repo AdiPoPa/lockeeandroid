@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/bg_register"
+    android:background="@color/bg_login"
     android:gravity="center"
     android:orientation="vertical"
     android:padding="10dp"
@@ -10,7 +10,7 @@
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:onClick="onReleaseFocus"
-    android:id="@+id/LinearLayout">
+    android:id="@+id/loginScreen">
 
     <requestFocus />
 
