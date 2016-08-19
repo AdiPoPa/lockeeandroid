@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/bg_color"
+    android:id="@+id/controlLayout"
+    tools:context="com.adipopa.lockee.ControlActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Lock Nickname"
+        android:textSize="36sp"
+        android:id="@+id/lockNickname"
+        android:layout_marginTop="42dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:id="@+id/controlButton"
+        android:layout_width="92dp"
+        android:layout_height="92dp"
+        android:background="@drawable/round_button"
+        android:onClick="onControl"
+        android:alpha="0"
+        android:layout_alignBottom="@+id/unlockView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="32dp" />
+
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/unlockView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/animatedbuttonunlock"
+        android:layout_above="@+id/dividerLine"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="108dp" />
+
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/lockView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/animatedbuttonlock"
+        android:alpha="0"
+        android:layout_alignTop="@+id/unlockView"
+        android:layout_centerHorizontal="true" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/dividerLine"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="15dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="LockID"
+            android:textSize="18sp"
+            android:id="@+id/lockID"
+            android:layout_gravity="center_vertical|right"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/lockIDHolder" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="LockID: "
+            android:textSize="18sp"
+            android:id="@+id/lockIDHolder"
+            android:layout_gravity="left|center_vertical"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
+
+    </RelativeLayout>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:id="@+id/dividerLine"
+        android:layout_centerHorizontal="true"
+        android:src="@color/colorAccent"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="42dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="ShareID: "
+        android:textSize="18sp"
+        android:id="@+id/shareIDHolder"
+        android:layout_marginLeft="15dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="ShareID"
+        android:textSize="18sp"
+        android:id="@+id/shareID"
+        android:layout_marginLeft="5dp"
+        android:layout_alignTop="@+id/shareIDHolder"
+        android:layout_toEndOf="@+id/shareIDHolder"
+        android:onClick="onCopyShareID" />
+
+    <Button
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:id="@+id/shareIDButton"
+        android:background="@drawable/ic_refresh_white_48dp"
+        android:layout_marginRight="15dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="10dp"
+        android:onClick="onGenerateShareID"/>
+
+</RelativeLayout>
