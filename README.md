@@ -3,6 +3,15 @@ The app is a part of our IoT project designed for mobile access to our server, d
 
 # Changelog
 
+## (19/08/2016) [v 1.0.7] - Added features and updated interface
+* Added activity for controlling a lock
+* Added new assets and improved UI
+* Updated Overflow Menu
+* Updated conectivity with the database
+* Fixed connection issues
+* Resolved crashes and unexpected results
+* Updated self esteem
+
 ## (16/08/2016) [v 1.0.6] - Additions and updated interface features
 * Added a ProgressDialog for the ASyncTask which retrieves the locks list
 * Added welcome screen and animation when the user registers an account
