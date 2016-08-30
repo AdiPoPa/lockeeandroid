@@ -1,18 +1,26 @@
 package com.adipopa.lockee;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.view.View;
 import android.widget.Toast;
@@ -30,11 +38,12 @@ import java.net.URLEncoder;
 
 public class LoginActivity extends AppCompatActivity {
 
-    EditText emailField, passwordField;
-    TextView emailError, loginError;
+    final Context context = this;
+    EditText emailField, passwordField, shareIDField;
+    TextView emailError, loginError, shareIDError;
+    AlertDialog alertDialog;
     LinearLayout linearLayout;
-    String email;
-    String password;
+    String email, password, shareID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,129 +53,215 @@ public class LoginActivity extends AppCompatActivity {
         MainActivity mainActivity = new MainActivity();
         mainActivity.finish();
 
-        emailField = (EditText) findViewById(R.id.emailField);
-        passwordField = (EditText) findViewById(R.id.passwordField);
+        if(!SaveSharedPreference.getSharedID(this).equals("not shared")) {
+            Intent i = new Intent(LoginActivity.this, SharedControlActivity.class);
+            startActivity(i);
+            finish();
+        } else {
+            emailField = (EditText) findViewById(R.id.emailField);
+            passwordField = (EditText) findViewById(R.id.passwordField);
 
-        emailError = (TextView) findViewById(R.id.emailError);
-        loginError = (TextView) findViewById(R.id.loginError);
+            emailError = (TextView) findViewById(R.id.emailError);
+            loginError = (TextView) findViewById(R.id.loginError);
 
-        linearLayout = (LinearLayout) findViewById(R.id.LinearLayout);
+            linearLayout = (LinearLayout) findViewById(R.id.linearLayout);
 
-        emailError.setVisibility(View.GONE);
-        loginError.setVisibility(View.GONE);
+            emailError.setVisibility(View.GONE);
+            loginError.setVisibility(View.GONE);
 
-        emailField.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                String email = emailField.getText().toString();
-                hideError(emailField, loginError);
-                if (email.isEmpty()) {
-                    emptyError(emailField, emailError);
-                } else if (!isEmailValid(email)) {
-                    showError(emailField, emailError, "Please type a valid email address");
-                }
-                else {
-                    hideError(emailField, emailError);
-                }
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
-        passwordField.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                String password = passwordField.getText().toString();
-                if (password.isEmpty()) {
-                    emptyField(passwordField);
-                } else{
-                    hideError(passwordField, loginError);
-                }
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
-        emailField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if(!b){
+            emailField.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                     String email = emailField.getText().toString();
-                    if(email.isEmpty()){
-                        emptyField(emailField);
+                    hideError(emailField, loginError);
+                    if (email.isEmpty()) {
+                        emptyError(emailField, emailError);
+                    } else if (!isEmailValid(email)) {
+                        showError(emailField, emailError, "Please type a valid email address");
+                    } else {
+                        hideError(emailField, emailError);
                     }
                 }
-            }
-        });
 
-        passwordField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if(!b){
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+
+                }
+            });
+
+            passwordField.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                     String password = passwordField.getText().toString();
-                    if(password.isEmpty()){
+                    if (password.isEmpty()) {
                         emptyField(passwordField);
-                    }
-                    else{
-                        hideEmptyError(passwordField);
-                    }
-                }
-            }
-        });
-
-        final TextView register = (TextView)findViewById(R.id.register);
-
-        register.setOnClickListener(
-                new Button.OnClickListener(){
-                    public void onClick(View v){
-                        register.setTextColor(Color.parseColor("#3F51B5"));
-                        new Handler().postDelayed(new Runnable(){
-                            @Override
-                            public void run() {
-                                register.setTextColor(Color.parseColor("#4799E8"));
-                                Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
-                                startActivity(i);
-                            }
-                        }, 200);
+                    } else {
+                        hideError(passwordField, loginError);
                     }
                 }
-        );
 
-        final TextView guest = (TextView)findViewById(R.id.guest);
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-        guest.setOnClickListener(
-                new Button.OnClickListener(){
-                    public void onClick(View v){
-                        guest.setTextColor(Color.parseColor("#3F51B5"));
-                        new Handler().postDelayed(new Runnable(){
-                            @Override
-                            public void run() {
-                                guest.setTextColor(Color.parseColor("#4799E8"));
-                                SaveSharedPreference.setLoginStatus(LoginActivity.this, "logged in");
-                                Intent i = new Intent(LoginActivity.this, MainActivity.class);
-                                startActivity(i);
-                                finish();
-                            }
-                        }, 200);
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+
+                }
+            });
+
+            emailField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View view, boolean b) {
+                    if (!b) {
+                        String email = emailField.getText().toString();
+                        if (email.isEmpty()) {
+                            emptyField(emailField);
+                        }
                     }
                 }
-        );
+            });
+
+            passwordField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View view, boolean b) {
+                    if (!b) {
+                        String password = passwordField.getText().toString();
+                        if (password.isEmpty()) {
+                            emptyField(passwordField);
+                        }
+                    }
+                }
+            });
+
+            final TextView register = (TextView) findViewById(R.id.register);
+
+            register.setOnClickListener(
+                    new Button.OnClickListener() {
+                        public void onClick(View v) {
+                            register.setTextColor(Color.parseColor("#3F51B5"));
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    register.setTextColor(Color.parseColor("#4799E8"));
+                                    emailField.setBackground(
+                                            ResourcesCompat.getDrawable(getResources(), R.drawable.edit_text_style, null)
+                                    );
+                                    passwordField.setBackground(
+                                            ResourcesCompat.getDrawable(getResources(), R.drawable.edit_text_style, null)
+                                    );
+                                    Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
+                                    startActivity(i);
+                                }
+                            }, 200);
+                        }
+                    }
+            );
+
+            final TextView guest = (TextView) findViewById(R.id.guest);
+
+            guest.setOnClickListener(
+                    new Button.OnClickListener() {
+                        public void onClick(View v) {
+                            guest.setTextColor(Color.parseColor("#3F51B5"));
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    guest.setTextColor(Color.parseColor("#4799E8"));
+
+                                    emailField.setBackground(
+                                            ResourcesCompat.getDrawable(getResources(), R.drawable.edit_text_style, null)
+                                    );
+                                    passwordField.setBackground(
+                                            ResourcesCompat.getDrawable(getResources(), R.drawable.edit_text_style, null)
+                                    );
+
+                                    final ViewGroup nullParent = null;
+                                    LayoutInflater li = LayoutInflater.from(context);
+                                    View dialogView = li.inflate(R.layout.share_dialog, nullParent);
+
+                                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context, R.style.alertDialog);
+
+                                    // set prompts.xml to alertdialog builder
+                                    alertDialogBuilder.setView(dialogView);
+
+                                    shareIDField = (EditText) dialogView.findViewById(R.id.shareIDField);
+                                    shareIDError = (TextView) dialogView.findViewById(R.id.shareIDError);
+                                    shareIDError.setVisibility(View.GONE);
+
+                                    // set dialog message
+                                    alertDialogBuilder.setPositiveButton("Use the lock", null);
+
+                                    // create alert dialog
+                                    alertDialog = alertDialogBuilder.create();
+
+                                    alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                                        @Override
+                                        public void onShow(DialogInterface dialog) {
+                                            Button b = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                                            b.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View view) {
+                                                    shareID = shareIDField.getText().toString();
+                                                    if (shareID.isEmpty()) {
+                                                        emptyField(shareIDField);
+                                                    }
+                                                    if (!shareID.isEmpty()) {
+                                                        new onSharedLock().execute(shareID);
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    });
+
+                                    // show it
+                                    alertDialog.show();
+
+                                    shareIDField.addTextChangedListener(new TextWatcher() {
+                                        @Override
+                                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                            String lock_inner_id = shareIDField.getText().toString();
+                                            if (lock_inner_id.isEmpty()) {
+                                                emptyField(shareIDField);
+                                            } else {
+                                                hideError(shareIDField, shareIDError);
+                                            }
+                                        }
+
+                                        @Override
+                                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                                        }
+
+                                        @Override
+                                        public void afterTextChanged(Editable editable) {
+
+                                        }
+                                    });
+
+                                    shareIDField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                                        @Override
+                                        public void onFocusChange(View view, boolean b) {
+                                            if (!b) {
+                                                String lock_inner_id = shareIDField.getText().toString();
+                                                if (lock_inner_id.isEmpty()) {
+                                                    emptyField(shareIDField);
+                                                }
+                                            }
+                                        }
+                                    });
+                                }
+                            }, 200);
+                        }
+                    }
+            );
+        }
     }
 
     public void onLogin(View view){
@@ -174,7 +269,7 @@ public class LoginActivity extends AppCompatActivity {
         password = passwordField.getText().toString();
         new startLogin().execute(email, password);
     }
-    
+
     private class startLogin extends AsyncTask<String, Void, String> {
 
         @Override
@@ -217,7 +312,7 @@ public class LoginActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             return null;
-        }   
+        }
 
         @Override
         protected void onPostExecute(String result) {
@@ -226,7 +321,7 @@ public class LoginActivity extends AppCompatActivity {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            SaveSharedPreference.setLoginStatus(LoginActivity.this, "logged in");
+                            SaveSharedPreference.setLoginStatus(LoginActivity.this, email);
                             Intent i = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(i);
                             finish();
@@ -256,8 +351,74 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private class onSharedLock extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String share_check_url = "https://lockee-cloned-andrei-b.c9users.io/android/share_check/";
+            String shareID = params[0];
+            // This is the login request
+            try {
+                URL url = new URL(share_check_url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+                String postData = URLEncoder.encode("shareID", "UTF-8") + "=" + URLEncoder.encode(shareID, "UTF-8");
+                bufferedWriter.write(postData);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                outputStream.close();
+                InputStream inputStream = httpURLConnection.getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
+                String result = "";
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    result += line;
+                }
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+                return result;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            if(result != null) {
+                switch (result) {
+                    case "wrong code":
+                        shareIDField.requestFocus();
+                        showError(shareIDField, shareIDError, "This share ID doesn't exist");
+                        break;
+                    default:
+                        SaveSharedPreference.setSharedNickname(LoginActivity.this, result);
+                        SaveSharedPreference.setSharedID(LoginActivity.this, shareID);
+                        Intent i = new Intent(LoginActivity.this, SharedControlActivity.class);
+                        startActivity(i);
+                        finish();
+                        break;
+                }
+            } else {
+                Log.e("AddSharedLockHandler", "There was an error registering the shared lock, please check connection");
+            }
+        }
+    }
+
     public void onReleaseFocus(View view){
-        linearLayout.requestFocus();
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        (findViewById(R.id.dummy_id)).requestFocus();
     }
 
     boolean isEmailValid(CharSequence email) {
