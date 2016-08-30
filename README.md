@@ -3,6 +3,14 @@ The app is a part of our IoT project designed for mobile access to our server, d
 
 # Changelog
 
+## (30/08/2016) [v 1.0.8] - Added features and updated UI
+* Added activity for controlling a shared lock
+* Added ASyncTasks for controlling, verifying, generating an ID
+* Added menu items and more interaction
+* Enhanced login and register UI
+* Tweaked some code
+* Updated timing and fixed issues
+
 ## (19/08/2016) [v 1.0.7] - Added features and updated interface
 * Added activity for controlling a lock
 * Added new assets and improved UI
