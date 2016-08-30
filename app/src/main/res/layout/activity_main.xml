@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:fitsSystemWindows="true"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -41,35 +40,16 @@
             android:id="@+id/noLocks"
             android:layout_marginTop="35dp" />
 
-        <TextView
-            android:id="@+id/registerGuideText"
-            android:layout_width="320dp"
-            android:layout_height="wrap_content"
-            android:width="500dp"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/registerGuide"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            android:padding="10dp"
-            android:gravity="center"
-            android:visibility="gone"
-            android:layout_gravity="left|bottom"
-            android:layout_marginBottom="60dp"
-            android:layout_marginLeft="10dp" />
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:layout_gravity="bottom|end"
-            android:scaleType="center"
-            android:src="@drawable/ic_add_black_36dp"/>
-
     </FrameLayout>
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/bg_color"
+        android:id="@+id/registerNotification"
+        android:alpha="0">
+
         <TextView
-            android:id="@+id/registerNotification"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
@@ -79,7 +59,17 @@
             android:textStyle="bold"
             android:gravity="center_horizontal"
             android:layout_gravity="center"
-            android:visibility="visible"
             android:layout_marginBottom="35dp" />
+
+    </FrameLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_margin="20dp"
+        android:layout_gravity="bottom|end"
+        android:scaleType="center"
+        android:src="@drawable/ic_add_black_36dp"/>
 
 </android.support.design.widget.CoordinatorLayout>

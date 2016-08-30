@@ -1,171 +1,200 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/linearLayout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/bg_register"
     android:gravity="center"
-    android:orientation="vertical"
-    android:padding="10dp"
-    android:focusable="true"
-    android:focusableInTouchMode="true"
     android:onClick="onReleaseFocus"
-    android:weightSum="1"
-    android:id="@+id/LinearLayout">
-
-    <requestFocus />
+    android:orientation="vertical"
+    android:weightSum="3">
 
     <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="vertical"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp">
+        android:id="@+id/dummy_id"
+        android:layout_width="0px"
+        android:layout_height="0px"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:orientation="vertical" />
 
-    <TextView
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="1.5"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/registerWelcomeText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/registerWelcome"
-            android:textIsSelectable="false"
-            android:textSize="26sp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/white"
-            android:id="@+id/registerWelcomeText"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="45dp" />
+            android:textIsSelectable="false"
+            android:textSize="26sp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+
         <EditText
             android:id="@+id/nameField"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:background="@drawable/edit_text_style"
             android:hint="@string/hint_name"
             android:inputType="textPersonName"
             android:padding="10dp"
             android:singleLine="true"
             android:textColor="@color/white"
-            android:textColorHint="@color/input_register_hint"
-            android:layout_marginBottom="3dp" />
+            android:textColorHint="@color/input_register_hint" />
 
         <TextView
+            android:id="@+id/nameError"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_gravity="left"
+            android:layout_marginStart="25dp"
             android:text="Small Text"
-            android:id="@+id/nameError"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/error"
-            android:layout_marginStart="5dp"
-            android:textStyle="italic"/>
+            android:textStyle="italic" />
 
         <EditText
             android:id="@+id/emailField"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="6dp"
             android:background="@drawable/edit_text_style"
             android:hint="@string/hint_email"
             android:inputType="textEmailAddress"
             android:padding="10dp"
             android:singleLine="true"
             android:textColor="@color/white"
-            android:textColorHint="@color/input_register_hint"
-            android:layout_marginTop="6dp"
-            android:layout_marginBottom="3dp"/>
+            android:textColorHint="@color/input_register_hint" />
 
         <TextView
+            android:id="@+id/emailError"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_gravity="left"
+            android:layout_marginStart="25dp"
             android:text="Small Text"
-            android:id="@+id/emailError"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/error"
-            android:layout_marginStart="5dp"
-            android:textStyle="italic"/>
+            android:textStyle="italic" />
 
         <EditText
             android:id="@+id/passwordField"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="6dp"
             android:background="@drawable/edit_text_style"
             android:hint="@string/hint_password"
             android:inputType="textPassword"
             android:padding="10dp"
             android:singleLine="true"
             android:textColor="@color/white"
-            android:textColorHint="@color/input_register_hint"
-            android:layout_marginTop="6dp"
-            android:layout_marginBottom="3dp"/>
+            android:textColorHint="@color/input_register_hint" />
 
         <TextView
+            android:id="@+id/passwordError"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_gravity="left"
+            android:layout_marginStart="25dp"
             android:text="Small Text"
-            android:id="@+id/passwordError"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/error"
-            android:layout_marginStart="5dp"
-            android:textStyle="italic"/>
+            android:textStyle="italic" />
 
         <EditText
             android:id="@+id/confirmPasswordField"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="6dp"
             android:background="@drawable/edit_text_style"
             android:hint="@string/hint_confirmpassword"
             android:inputType="textPassword"
             android:padding="10dp"
             android:singleLine="true"
             android:textColor="@color/white"
-            android:textColorHint="@color/input_register_hint"
-            android:layout_marginTop="6dp"
-            android:layout_marginBottom="3dp" />
+            android:textColorHint="@color/input_register_hint" />
 
         <TextView
+            android:id="@+id/confirmPasswordError"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_gravity="left"
+            android:layout_marginStart="25dp"
             android:text="Small Text"
-            android:id="@+id/confirmPasswordError"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/error"
-            android:layout_marginStart="5dp"
-            android:textStyle="italic"/>
+            android:textStyle="italic" />
 
         <android.support.v7.widget.AppCompatCheckBox
+            android:id="@+id/termsCheckBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="5dp"
+            android:checked="false"
             android:text="@string/terms"
             android:textColor="@color/white"
             android:textSize="16sp"
-            android:id="@+id/termsCheckBox"
-            android:layout_gravity="center_horizontal"
-            android:checked="false"
-            app:buttonTint="@color/colorAccent"
-            android:layout_marginTop="5dp"/>
+            app:buttonTint="@color/colorAccent" />
 
         <android.support.v7.widget.AppCompatCheckBox
+            android:id="@+id/errorCheckBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="5dp"
+            android:checked="false"
             android:text="@string/terms"
             android:textColor="@color/error"
             android:textSize="16sp"
-            android:id="@+id/errorCheckBox"
-            android:layout_gravity="center_horizontal"
-            android:checked="false"
-            app:buttonTint="@color/error"
-            android:layout_marginTop="5dp"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            app:buttonTint="@color/error" />
 
-        <Button
-            android:layout_width="96dp"
-            android:layout_height="42dp"
-            android:text="@string/registerButton"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="#FFFFFF"
-            android:id="@+id/registerButton"
-            android:layout_gravity="center_horizontal"
-            android:background="@drawable/button_style"
-            android:layout_marginTop="20dp"
-            android:onClick="onRegister" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="1.5"
+        android:gravity="center">
+
+    <Button
+        android:id="@+id/registerButton"
+        android:layout_width="96dp"
+        android:layout_height="42dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/button_style"
+        android:onClick="onRegister"
+        android:text="@string/registerButton"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:textStyle="bold" />
 
     </LinearLayout>
 

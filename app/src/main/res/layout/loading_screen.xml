@@ -8,16 +8,16 @@
 
     <pl.droidsonroids.gif.GifTextView
         android:layout_width="wrap_content"
-        android:layout_height="108dp"
+        android:layout_height="wrap_content"
         android:id="@+id/lockeeText"
         android:background="@drawable/lockeetext"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="172dp" />
+        android:layout_below="@+id/maintenanceText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="153dp" />
 
     <pl.droidsonroids.gif.GifTextView
-        android:layout_width="40dp"
-        android:layout_height="72dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:id="@+id/lockeeIcon"
         android:background="@drawable/lockeeicon"
         android:layout_alignParentBottom="true"

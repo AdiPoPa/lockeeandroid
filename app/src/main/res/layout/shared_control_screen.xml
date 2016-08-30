@@ -54,15 +54,16 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/dividerLine"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="15dp">
+        android:layout_marginBottom="15dp"
+        android:id="@+id/relativeLayout">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="LockID: "
+            android:text="ShareID: "
             android:textSize="18sp"
-            android:id="@+id/lockIDHolder"
+            android:id="@+id/shareIDHolder"
             android:layout_gravity="left|center_vertical"
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true" />
@@ -71,12 +72,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="LockID"
+            android:text="ShareID"
             android:textSize="18sp"
-            android:id="@+id/lockID"
+            android:id="@+id/shareID"
             android:layout_gravity="center_vertical|right"
             android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/lockIDHolder" />
+            android:layout_toEndOf="@+id/shareIDHolder" />
 
     </RelativeLayout>
 
@@ -88,41 +89,5 @@
         android:src="@color/colorAccent"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="42dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="ShareID: "
-        android:textSize="18sp"
-        android:id="@+id/shareIDHolder"
-        android:layout_marginLeft="15dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="ShareID"
-        android:textSize="18sp"
-        android:id="@+id/shareID"
-        android:layout_marginLeft="5dp"
-        android:layout_alignTop="@+id/shareIDHolder"
-        android:layout_toEndOf="@+id/shareIDHolder"
-        android:onClick="onCopyShareID" />
-
-    <Button
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:id="@+id/shareIDButton"
-        android:background="@drawable/ic_refresh_white_48dp"
-        android:layout_marginRight="15dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="10dp"
-        android:onClick="onGenerateShareID"/>
 
 </RelativeLayout>
