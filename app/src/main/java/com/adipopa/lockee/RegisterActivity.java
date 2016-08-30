@@ -1,5 +1,6 @@
 package com.adipopa.lockee;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -10,6 +11,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -40,7 +42,7 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register_screen);
 
-        linearLayout = (LinearLayout) findViewById(R.id.LinearLayout);
+        linearLayout = (LinearLayout) findViewById(R.id.linearLayout);
 
         nameField = (EditText) findViewById(R.id.nameField);
         emailField = (EditText) findViewById(R.id.emailField);
@@ -256,8 +258,7 @@ public class RegisterActivity extends AppCompatActivity {
         if(!termsCheckBox.isChecked()) {
             termsCheckBox.setVisibility(View.GONE);
             errorCheckBox.setVisibility(View.VISIBLE);
-        }
-        else if(!nameError.isShown() && !emailError.isShown() && !passwordError.isShown() && !confirmPasswordError.isShown() &&
+        } else if(!nameError.isShown() && !emailError.isShown() && !passwordError.isShown() && !confirmPasswordError.isShown() &&
                 !name.isEmpty() && !email.isEmpty() && !password.isEmpty() && !confirmPassword.isEmpty()){
             new startRegister().execute(name, email, password);
         }
@@ -379,8 +380,7 @@ public class RegisterActivity extends AppCompatActivity {
                     emptyError(emailField, emailError);
                 } else if (!isEmailValid(email)) {
                     showError(emailField, emailError, "Please type a valid email address");
-                } else
-                if (result.equals("email already taken")) {
+                } else if (result.equals("email already taken")) {
                     showError(emailField, emailError, "This email is associated with another account");
                 } else {
                     hideError(emailField, emailError);
@@ -392,7 +392,9 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void onReleaseFocus(View view){
-        linearLayout.requestFocus();
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        (findViewById(R.id.dummy_id)).requestFocus();
     }
 
     // Method to check if email field is valid
