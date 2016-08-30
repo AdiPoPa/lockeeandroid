@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:title=""
+        android:id="@+id/empty"
+        android:orderInCategory="101"
+        android:icon="@drawable/overflow"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/menu_about"
+                android:title="@string/about"
+                android:icon="@drawable/ic_about_white_48dp"/>
+            <item
+                android:id="@+id/menu_sync"
+                android:title="@string/sync"
+                android:icon="@drawable/ic_sync_white_48dp"/>
+            <item
+                android:id="@+id/menu_dismiss"
+                android:title="@string/dismiss"
+                android:icon="@drawable/ic_clear_white_48dp"/>
+        </menu>
+    </item>
+
+</menu>
