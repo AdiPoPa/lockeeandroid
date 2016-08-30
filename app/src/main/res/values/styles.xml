@@ -23,9 +23,14 @@
 
     <style name="loadingDialog" parent="android:Theme.DeviceDefault.Dialog">
         <item name="DialogTitleAppearance">@android:style/TextAppearance.Medium</item>
-        <item name="DialogTitleText">Loading your locks</item>
+        <item name="DialogTitleText">Loading your details</item>
         <item name="DialogSpotColor">@color/colorAccent</item>
         <item name="DialogSpotCount">5</item>
+    </style>
+
+    <style name="alertDialog" parent="android:Theme.Dialog">
+        <item name="android:background">@color/bg_dialog</item>
+        <item name="android:windowNoTitle">true</item>
     </style>
 
     <!-- The beef: background color for Action Bar overflow menu -->
