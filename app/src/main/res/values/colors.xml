@@ -8,6 +8,8 @@
     <color name="white">#ffffff</color>
     <color name="input_login_hint">#999999</color>
     <color name="input_register_hint">#999999</color>
+    <color name="bg_pressed">#141414</color>
     <color name="bg_color">#222222</color>
+    <color name="bg_dialog">#282828</color>
     <color name="error">#ff0000</color>
 </resources>
