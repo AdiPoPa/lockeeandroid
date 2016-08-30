@@ -13,7 +13,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="10dp"
-        android:layout_marginRight="15dp"
+        android:layout_marginRight="10dp"
         android:layout_marginBottom="10dp" />
 
     <TextView
@@ -22,12 +22,12 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="nickname"
         android:textColor="@color/white"
-        android:textSize="26sp"
+        android:textSize="24sp"
         android:id="@+id/nicknameText"
         android:layout_marginLeft="15dp"
         android:layout_alignParentTop="true"
         android:layout_toEndOf="@+id/shareIDText"
-        android:layout_marginTop="6dp" />
+        android:layout_marginTop="8dp" />
 
     <TextView
         android:layout_width="wrap_content"
