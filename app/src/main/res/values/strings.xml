@@ -20,13 +20,19 @@
     <string name="confirmPasswordWrong">Please confirm the password</string>
     <string name="doubleRegister">An account with this email already exists</string>
     <string name="forgotPassword">Forgot your password?</string>
+    <string name="addlock">Add a lock</string>
     <string name="about">About</string>
+    <string name="sync">Sync</string>
     <string name="settings">Settings</string>
     <string name="logout">Logout</string>
+    <string name="remove">Remove</string>
+    <string name="dismiss">Dismiss</string>
     <string name="options_menu">Options menu</string>
-    <string name="register_successful">Register successful</string>
+    <string name="register_successful">You have successfully created\n an account</string>
     <string name="switchButton">switch</string>
     <string name="maintenance">Server currently in maintenance</string>
     <string name="nolocks">You have no locks associated\n with this account</string>
     <string name="registerGuide">Tap this button to add a lock</string>
+    <string name="about_info">This app is a part of our IoT project designed for mobile access to our server, database and remote control of Arduino.</string>
+    <string name="about_credits">Glimpse Team\nFor IT 2016 Edition</string>
 </resources>
