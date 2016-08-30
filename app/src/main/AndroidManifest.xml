@@ -20,7 +20,8 @@
         <activity android:name=".LoginActivity" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".MainActivity" />
-        <activity android:name=".ControlActivity"></activity>
+        <activity android:name=".ControlActivity" />
+        <activity android:name=".SharedControlActivity"></activity>
     </application>
 
 </manifest>
