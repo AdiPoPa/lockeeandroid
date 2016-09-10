@@ -3,9 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:title="@string/remove"
-        android:id="@+id/removeButton"
-        app:showAsAction="ifRoom">
+        android:title=""
+        android:id="@+id/empty"
+        android:orderInCategory="101"
+        android:icon="@drawable/overflow"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/menu_about"
+                android:title="@string/about"
+                android:icon="@drawable/ic_about_white_48dp"/>
+            <item
+                android:id="@+id/menu_sync"
+                android:title="@string/sync"
+                android:icon="@drawable/ic_sync_white_48dp"/>
+            <item
+                android:id="@+id/menu_remove"
+                android:title="@string/remove"
+                android:icon="@drawable/ic_clear_white_48dp"/>
+        </menu>
     </item>
 
 </menu>
