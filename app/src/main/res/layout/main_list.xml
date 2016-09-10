@@ -1,20 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/bg_color">
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/lockIcon"
-        android:src="@drawable/ic_lock_open_white_48dp"
-        android:contentDescription=""
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="10dp" />
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/bg_color"
+    android:padding="10dp">
 
     <TextView
         android:layout_width="wrap_content"
@@ -24,10 +13,8 @@
         android:textColor="@color/white"
         android:textSize="24sp"
         android:id="@+id/nicknameText"
-        android:layout_marginLeft="15dp"
         android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/shareIDText"
-        android:layout_marginTop="8dp" />
+        android:layout_marginLeft="5dp"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -41,27 +28,11 @@
         android:layout_alignStart="@+id/nicknameText"
         android:layout_marginTop="-5dp" />
 
-    <TextView
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="shareID"
-        android:textColor="@color/input_login_hint"
-        android:id="@+id/shareIDText"
-        android:layout_alignTop="@+id/listIcon"
-        android:layout_toStartOf="@+id/listIcon"
-        android:layout_marginEnd="15dp"
-        android:visibility="gone" />
-		
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="status"
-        android:textColor="@color/input_login_hint"
-        android:id="@+id/statusText"
-        android:layout_below="@+id/shareIDText"
-        android:layout_alignStart="@+id/shareIDText"
-        android:visibility="gone"/>
+        android:id="@+id/lockIcon"
+        android:src="@drawable/ic_lock_open_white_48dp"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>
