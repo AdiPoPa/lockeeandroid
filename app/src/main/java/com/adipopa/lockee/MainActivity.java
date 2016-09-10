@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AlertDialog;
@@ -17,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -54,23 +56,25 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.net.ssl.HttpsURLConnection;
+
 import dmax.dialog.SpotsDialog;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static String registerNotification = "hide";
     final Context context = this;
     ListView mainList;
     TextView noLocks;
-    String email;
+    public static String registerNotification = "hide";
+    String email, nickname, lockInnerID, orientation;
     EditText nicknameField, lockIDField;
     TextView nicknameError, lockIDError;
+    CoordinatorLayout mainLayout;
     AlertDialog alertDialog;
 
-    private static final String TAG_LOCKINFO = "locks_info";
+    private static final String TAG_LOCKINFO = "locksInfo";
     private static final String TAG_NICKNAME = "nickname";
-    private static final String TAG_LOCK_ID = "lock_inner_id";
-    private static final String TAG_SHARE_ID = "share_id";
+    private static final String TAG_LOCK_ID = "lockInnerID";
     private static final String TAG_STATUS = "status";
     private static final String TAG_ICON = "icon";
 
@@ -79,25 +83,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        LoginActivity loginActivity = new LoginActivity();
-        loginActivity.finish();
-
         if(SaveSharedPreference.getLoginStatus(this).equals("not logged")) {
             Intent i = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(i);
             finish();
         } else {
+            mainLayout = (CoordinatorLayout) findViewById(R.id.mainLayout);
             email = SaveSharedPreference.getLoginStatus(this);
             noLocks = (TextView) findViewById(R.id.noLocks);
-
-            // TODO: Make the title the user's full name
 
             final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
             final FrameLayout registerSuccessful = (FrameLayout) findViewById(R.id.registerNotification);
 
             if (registerNotification.equals("show")) {
-                fab.setVisibility(View.GONE);
+                mainLayout.setVisibility(View.INVISIBLE);
                 final ObjectAnimator fadeIn = ObjectAnimator.ofFloat(registerSuccessful, "alpha", 0f, 1f);
                 fadeIn.setDuration(2000);
                 final ObjectAnimator fadeOut = ObjectAnimator.ofFloat(registerSuccessful, "alpha",  1f, 0f);
@@ -111,7 +111,6 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         super.onAnimationEnd(animation);
-                        fab.setVisibility(View.VISIBLE);
                         mAnimationSet.setStartDelay(3000);
                         mAnimationSet.play(fadeOut);
                         mAnimationSet.start();
@@ -120,15 +119,13 @@ public class MainActivity extends AppCompatActivity {
                             public void run() {
                                 mAnimationSet.end();
                                 registerNotification = "hide";
-                                new getLocks().execute(email);
+                                new getLocks().execute();
                             }
                         }, 5000);
                     }
                 });
                 mAnimationSet.start();
             }
-
-            // TODO: Make the list gone when there are no locks
 
             mainList = (ListView) findViewById(R.id.mainList);
             mainList.addFooterView(new View(MainActivity.this));
@@ -137,21 +134,10 @@ public class MainActivity extends AppCompatActivity {
                     new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            TextView nicknameText = (TextView) view.findViewById(R.id.nicknameText);
                             TextView lockIDText = (TextView) view.findViewById(R.id.lockIDText);
-                            TextView shareIDText = (TextView) view.findViewById(R.id.shareIDText);
-                            TextView statusText = (TextView) view.findViewById(R.id.statusText);
                             Intent intent = new Intent(MainActivity.this, ControlActivity.class);
-
-                            String nickname = nicknameText.getText().toString();
                             String lockID = lockIDText.getText().toString();
-                            String shareID = shareIDText.getText().toString();
-                            String status = statusText.getText().toString();
-                            intent.putExtra("nickname", nickname);
                             intent.putExtra("lockID", lockID);
-                            intent.putExtra("shareID", shareID);
-                            intent.putExtra("status", status);
-
                             startActivity(intent);
                         }
                     }
@@ -193,23 +179,18 @@ public class MainActivity extends AppCompatActivity {
                             b.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
+                                    nickname = nicknameField.getText().toString();
+                                    lockInnerID = lockIDField.getText().toString();
                                     RadioButton orientationButton = (RadioButton) radioGroup.findViewById(radioGroup.getCheckedRadioButtonId());
-                                    String orientation = orientationButton.getText().toString();
-                                    if(orientation.equals("Left")){
-                                        orientation = "left";
-                                    } else {
-                                        orientation = "right";
-                                    }
-                                    String nickname = nicknameField.getText().toString();
-                                    String lock_inner_id = lockIDField.getText().toString();
+                                    orientation = orientationButton.getText().toString().toLowerCase();
                                     if(nickname.isEmpty()) {
                                         emptyField(nicknameField);
                                     }
-                                    if(lock_inner_id.isEmpty()){
+                                    if(lockInnerID.isEmpty()){
                                         emptyField(lockIDField);
                                     }
-                                    if(!nickname.isEmpty() && !lock_inner_id.isEmpty()){
-                                        new onAddLock().execute(email, nickname, lock_inner_id, orientation);
+                                    if(!nickname.isEmpty() && !lockInnerID.isEmpty()){
+                                        new onAddLock().execute();
                                     }
                                 }
                             });
@@ -242,8 +223,8 @@ public class MainActivity extends AppCompatActivity {
                     lockIDField.addTextChangedListener(new TextWatcher() {
                         @Override
                         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                            String lock_inner_id = lockIDField.getText().toString();
-                            if (lock_inner_id.isEmpty()) {
+                            String lockInnerID = lockIDField.getText().toString();
+                            if (lockInnerID.isEmpty()) {
                                 emptyField(lockIDField);
                             } else{
                                 hideError(lockIDField, lockIDError);
@@ -277,8 +258,8 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onFocusChange(View view, boolean b) {
                             if(!b){
-                                String lock_inner_id = lockIDField.getText().toString();
-                                if(lock_inner_id.isEmpty()){
+                                String lockInnerID = lockIDField.getText().toString();
+                                if(lockInnerID.isEmpty()){
                                     emptyField(lockIDField);
                                 }
                             }
@@ -297,14 +278,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onMenuOpened(int featureId, Menu menu) {
+        if(featureId == Window.FEATURE_ACTION_BAR && menu != null){
+            if(menu.getClass().getSimpleName().equals("MenuBuilder")){
+                try{
+                    Method m = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
+                    m.setAccessible(true);
+                    m.invoke(menu, true);
+                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return super.onMenuOpened(featureId, menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch(item.getItemId()){
             case R.id.menu_sync: {
-                new getLocks().execute(email);
+                new getLocks().execute();
                 return true;
             }
             case R.id.menu_settings: {
-
+                Toast toast = Toast.makeText(MainActivity.this, "This is a place holder\nFeature coming soon", Toast.LENGTH_SHORT);
+                TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
+                v.setGravity(Gravity.CENTER);
+                toast.show();
                 return true;
             }
             case R.id.menu_about: {
@@ -348,25 +348,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onMenuOpened(int featureId, Menu menu) {
-        if(featureId == Window.FEATURE_ACTION_BAR && menu != null){
-            if(menu.getClass().getSimpleName().equals("MenuBuilder")){
-                try{
-                    Method m = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
-                    m.setAccessible(true);
-                    m.invoke(menu, true);
-                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return super.onMenuOpened(featureId, menu);
-    }
-
     /** Async task class to get json by making HTTP call **/
 
-    private class getLocks extends AsyncTask<String, Void, Void> {
+    private class getLocks extends AsyncTask<Void, Void, Void> {
 
         // Hashmap for ListView
         ArrayList<HashMap<String, String>> locksList;
@@ -377,20 +361,57 @@ public class MainActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             progressDialog.setCancelable(false);
+            mainLayout.setVisibility(View.INVISIBLE);
             progressDialog.show();
         }
 
         @Override
-        protected Void doInBackground(String... params) {
+        protected Void doInBackground(Void... params) {
             // Creating service handler class instance
-            LocksListWorker webreq = new LocksListWorker();
 
             // Making a request to url and getting response
-            String locks_url = "https://lockee-cloned-andrei-b.c9users.io/android/get_locks/";
+            String getLocks_url = "https://lockee-andrei-b.c9users.io/android/get_locks/";
 
-            String email = params[0];
+            String jsonStr = "";
 
-            String jsonStr = webreq.makeWebServiceCall(locks_url, LocksListWorker.POST, email);
+            try {
+                URL url = new URL(getLocks_url);
+
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(15000);
+                conn.setConnectTimeout(15000);
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+                conn.setRequestMethod("POST");
+
+                if (email != null) {
+                    OutputStream os = conn.getOutputStream();
+                    BufferedWriter writer = new BufferedWriter(
+                            new OutputStreamWriter(os, "UTF-8"));
+
+                    String result = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8");
+
+                    writer.write(result);
+
+                    writer.flush();
+                    writer.close();
+                    os.close();
+                }
+
+                int responseCode = conn.getResponseCode();
+
+                if (responseCode == HttpsURLConnection.HTTP_OK) {
+                    String line;
+                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                    while ((line = br.readLine()) != null) {
+                        jsonStr += line;
+                    }
+                } else {
+                    jsonStr = "";
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             Log.d("Response: ", "> " + jsonStr);
 
@@ -406,13 +427,12 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     progressDialog.dismiss();
-
                     if(locksList != null) {
                         if (locksList.size() > 0) {
                             ListAdapter adapter = new SimpleAdapter(
                                     MainActivity.this, locksList,
-                                    R.layout.main_list, new String[]{TAG_NICKNAME, TAG_LOCK_ID, TAG_SHARE_ID, TAG_STATUS, TAG_ICON},
-                                    new int[]{R.id.nicknameText, R.id.lockIDText, R.id.shareIDText, R.id.statusText, R.id.lockIcon}
+                                    R.layout.main_list, new String[]{TAG_NICKNAME, TAG_LOCK_ID, TAG_ICON},
+                                    new int[]{R.id.nicknameText, R.id.lockIDText, R.id.lockIcon}
                             );
                             mainList.setAdapter(adapter);
                             noLocks.setVisibility(View.GONE);
@@ -421,11 +441,12 @@ public class MainActivity extends AppCompatActivity {
                             noLocks.setVisibility(View.VISIBLE);
                             mainList.setVisibility(View.GONE);
                         }
+                        mainLayout.setVisibility(View.VISIBLE);
                     } else {
                         Log.e("LocksListHandler", "There was an error getting the list of locks, please check connection");
                     }
                 }
-            }, 1000);
+            }, 750);
         }
 
     }
@@ -447,14 +468,11 @@ public class MainActivity extends AppCompatActivity {
 
                     String nickname = c.getString(TAG_NICKNAME);
                     String lock_id = c.getString(TAG_LOCK_ID);
-                    String share_id = c.getString(TAG_SHARE_ID);
-                    String status = "";
+                    String status = c.getString(TAG_STATUS);
                     int icon = 0;
-                    if(c.getString(TAG_STATUS).equals("true")) {
-                        status = "unlocked";
+                    if(status.equals("#unlocked")) {
                         icon = R.drawable.ic_lock_open_white_48dp;
-                    } else if (c.getString(TAG_STATUS).equals("false")){
-                        status = "locked";
+                    } else if (status.equals("#locked")) {
                         icon = R.drawable.ic_lock_outline_white_48dp;
                     }
 
@@ -464,8 +482,6 @@ public class MainActivity extends AppCompatActivity {
                     // adding each child node to HashMap key => value
                     lock.put(TAG_NICKNAME, nickname);
                     lock.put(TAG_LOCK_ID, lock_id);
-                    lock.put(TAG_SHARE_ID, share_id);
-                    lock.put(TAG_STATUS, status);
                     lock.put(TAG_ICON, Integer.toString(icon));
 
                     // adding lock to locks list
@@ -482,7 +498,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private class onAddLock extends AsyncTask<String, Void, String> {
+    private class onAddLock extends AsyncTask<Void, Void, String> {
 
         @Override
         protected void onPreExecute() {
@@ -490,15 +506,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected String doInBackground(String... params) {
-            String register_url = "https://lockee-cloned-andrei-b.c9users.io/android/add_lock/";
-            String email = params[0];
-            String nickname = params[1];
-            String lock_inner_id = params[2];
-            String orientation = params[3];
+        protected String doInBackground(Void... params) {
+            String addLock_url = "https://lockee-andrei-b.c9users.io/android/add_lock/";
             // This is the login request
             try {
-                URL url = new URL(register_url);
+                URL url = new URL(addLock_url);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoOutput(true);
@@ -507,7 +519,7 @@ public class MainActivity extends AppCompatActivity {
                 BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
                 String postData = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8") + "&" +
                         URLEncoder.encode("nickname", "UTF-8") + "=" + URLEncoder.encode(nickname, "UTF-8") + "&" +
-                        URLEncoder.encode("lock_inner_id", "UTF-8") + "=" + URLEncoder.encode(lock_inner_id, "UTF-8") + "&" +
+                        URLEncoder.encode("lockInnerID", "UTF-8") + "=" + URLEncoder.encode(lockInnerID, "UTF-8") + "&" +
                         URLEncoder.encode("orientation", "UTF-8") + "=" + URLEncoder.encode(orientation, "UTF-8");
                 bufferedWriter.write(postData);
                 bufferedWriter.flush();
@@ -538,7 +550,7 @@ public class MainActivity extends AppCompatActivity {
                         hideError(nicknameField, nicknameError);
                         hideError(lockIDField, lockIDError);
                         alertDialog.hide();
-                        new getLocks().execute(email);
+                        new getLocks().execute();
                         break;
                     case "nickname already used":
                         nicknameField.requestFocus();
@@ -566,7 +578,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if(registerNotification.equals("hide")) {
-            new getLocks().execute(email);
+            new getLocks().execute();
         }
     }
 
