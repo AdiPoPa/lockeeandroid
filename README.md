@@ -3,6 +3,17 @@ The app is a part of our IoT project designed for mobile access to our server, d
 
 # Changelog
 
+## (08/09/2016) [v 1.1.0] - First official release
+* Added AsyncTask classes inside activites
+* Updated connection with the server
+* Updated interface
+* Prepared for live demo
+
+## (04/09/2016) [v 1.0.9] - Added features and updated server communication
+* Added feature for session share ID
+* Separated ID sharing into static and session
+* Updated interface
+
 ## (30/08/2016) [v 1.0.8] - Added features and updated UI
 * Added activity for controlling a shared lock
 * Added ASyncTasks for controlling, verifying, generating an ID
