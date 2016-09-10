@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -19,7 +20,7 @@ import java.net.URL;
 import pl.droidsonroids.gif.GifTextView;
 
 public class LoadingActivity extends AppCompatActivity {
-    
+
     Handler handler;
     Runnable loading, maintenance;
     int LOADING_TIME = 7800;
@@ -31,10 +32,11 @@ public class LoadingActivity extends AppCompatActivity {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         getSupportActionBar().hide();
         this.setContentView(R.layout.loading_screen);
-        
+
         final GifTextView lockeeText = (GifTextView) findViewById(R.id.lockeeText);
         final GifTextView lockeeIcon = (GifTextView) findViewById(R.id.lockeeIcon);
         final TextView maintenanceText = (TextView) findViewById(R.id.maintenanceText);
+        final Button offlineButton = (Button) findViewById(R.id.offlineButton);
 
         handler = new Handler();
         loading = new Runnable() {
@@ -50,11 +52,12 @@ public class LoadingActivity extends AppCompatActivity {
             public void run() {
                 lockeeText.setVisibility(View.INVISIBLE);
                 lockeeIcon.setVisibility(View.INVISIBLE);
+                offlineButton.setVisibility(View.VISIBLE);
                 maintenanceText.setVisibility(View.VISIBLE);
             }
         };
     }
-    
+
     private class onPingServer extends AsyncTask<Void, Void, String> {
 
         @Override
@@ -64,7 +67,7 @@ public class LoadingActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(Void... params) {
-            String ping_url = "https://lockee-cloned-andrei-b.c9users.io/android/ping/";
+            String ping_url = "https://lockee-andrei-b.c9users.io/android/ping/";
             try {
                 URL url = new URL(ping_url);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
@@ -96,6 +99,12 @@ public class LoadingActivity extends AppCompatActivity {
                 handler.removeCallbacks(loading);
             }
         }
+    }
+
+    public void onOfflineMode(View view){
+        Intent i = new Intent(LoadingActivity.this, MainActivity.class);
+        startActivity(i);
+        finish();
     }
 
     @Override
