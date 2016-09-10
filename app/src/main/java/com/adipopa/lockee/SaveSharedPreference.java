@@ -6,7 +6,6 @@ import android.preference.PreferenceManager;
 
 public class SaveSharedPreference {
     static final String PREF_LOGIN_STATUS = "logged in";
-    static final String PREF_SHARED_NICKNAME = "nickname";
     static final String PREF_SHARED_ID = "shared";
 
     static SharedPreferences getSharedPreferences(Context ctx) {
@@ -21,16 +20,6 @@ public class SaveSharedPreference {
 
     public static String getLoginStatus(Context ctx) {
         return getSharedPreferences(ctx).getString(PREF_LOGIN_STATUS, "not logged");
-    }
-
-    public static void setSharedNickname(Context ctx, String nickname){
-        SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
-        editor.putString(PREF_SHARED_NICKNAME, nickname);
-        editor.apply();
-    }
-
-    public static String getSharedNickname(Context ctx) {
-        return getSharedPreferences(ctx).getString(PREF_SHARED_NICKNAME, "no nickname");
     }
 
     public static void setSharedID(Context ctx, String shareID){
