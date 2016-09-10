@@ -1,5 +1,6 @@
 package com.adipopa.lockee;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,8 +20,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.view.View;
 import android.widget.Toast;
@@ -36,9 +35,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import dmax.dialog.SpotsDialog;
+
 public class LoginActivity extends AppCompatActivity {
 
     final Context context = this;
+    public static Activity loginActivity;
     EditText emailField, passwordField, shareIDField;
     TextView emailError, loginError, shareIDError;
     AlertDialog alertDialog;
@@ -49,6 +51,8 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_screen);
+
+        loginActivity = this;
 
         MainActivity mainActivity = new MainActivity();
         mainActivity.finish();
@@ -213,7 +217,7 @@ public class LoginActivity extends AppCompatActivity {
                                                         emptyField(shareIDField);
                                                     }
                                                     if (!shareID.isEmpty()) {
-                                                        new onSharedLock().execute(shareID);
+                                                        new onSharedLock().execute();
                                                     }
                                                 }
                                             });
@@ -226,8 +230,8 @@ public class LoginActivity extends AppCompatActivity {
                                     shareIDField.addTextChangedListener(new TextWatcher() {
                                         @Override
                                         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                                            String lock_inner_id = shareIDField.getText().toString();
-                                            if (lock_inner_id.isEmpty()) {
+                                            String lockInnerID = shareIDField.getText().toString();
+                                            if (lockInnerID.isEmpty()) {
                                                 emptyField(shareIDField);
                                             } else {
                                                 hideError(shareIDField, shareIDError);
@@ -249,8 +253,8 @@ public class LoginActivity extends AppCompatActivity {
                                         @Override
                                         public void onFocusChange(View view, boolean b) {
                                             if (!b) {
-                                                String lock_inner_id = shareIDField.getText().toString();
-                                                if (lock_inner_id.isEmpty()) {
+                                                String lockInnerID = shareIDField.getText().toString();
+                                                if (lockInnerID.isEmpty()) {
                                                     emptyField(shareIDField);
                                                 }
                                             }
@@ -267,21 +271,31 @@ public class LoginActivity extends AppCompatActivity {
     public void onLogin(View view){
         email = emailField.getText().toString();
         password = passwordField.getText().toString();
-        new startLogin().execute(email, password);
+        if(email.isEmpty()) {
+            emptyField(emailField);
+        }
+        if(password.isEmpty()) {
+            emptyField(passwordField);
+        }
+        if(!email.isEmpty() && isEmailValid(email) && !password.isEmpty()) {
+            new startLogin().execute();
+        }
     }
 
-    private class startLogin extends AsyncTask<String, Void, String> {
+    private class startLogin extends AsyncTask<Void, Void, String> {
+
+        android.app.AlertDialog progressDialog = new SpotsDialog(LoginActivity.this, R.style.loadingDialog);
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            progressDialog.setCancelable(false);
+            progressDialog.show();
         }
 
         @Override
-        protected String doInBackground(String... params) {
-            String login_url = "https://lockee-cloned-andrei-b.c9users.io/android/login/";
-            String email = params[0];
-            String password = params[1];
+        protected String doInBackground(Void... params) {
+            String login_url = "https://lockee-andrei-b.c9users.io/android/login/";
             // This is the login request
             try {
                 URL url = new URL(login_url);
@@ -315,56 +329,60 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(String result) {
-            if(result != null) {
-                if(result.equals("login success")) {
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
+        protected void onPostExecute(final String result) {
+            new Handler().postDelayed(new Runnable(){
+                @Override
+                public void run() {
+                    progressDialog.dismiss();
+                    if(result != null) {
+                        if(result.equals("login success")) {
                             SaveSharedPreference.setLoginStatus(LoginActivity.this, email);
                             Intent i = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(i);
                             finish();
+                        } else {
+                            passwordField.setText("");
+                            emptyField(passwordField);
+                            if (!email.isEmpty() || !isEmailValid(email)) {
+                                emailField.requestFocus();
+                            }
+                            if (email.isEmpty()) {
+                                emailField.requestFocus();
+                            }
+                            if (isEmailValid(email)) {
+                                hideEmptyError(emailField);
+                                passwordField.requestFocus();
+                                showError(passwordField, loginError, "Please verify your input information");
+                            } else {
+                                showError(emailField, emailError, "Please type a valid email address");
+                                showError(emailField, loginError, "Please verify your input information");
+                            }
                         }
-                    }, 200);
-                } else {
-                    passwordField.setText("");
-                    emptyField(passwordField);
-                    if (!email.isEmpty() || !isEmailValid(email)) {
-                        emailField.requestFocus();
-                    }
-                    if (email.isEmpty()) {
-                        emailField.requestFocus();
-                    }
-                    if (isEmailValid(email)) {
-                        hideEmptyError(emailField);
-                        passwordField.requestFocus();
-                        showError(passwordField, loginError, "Please verify your input information");
                     } else {
-                        showError(emailField, emailError, "Please type a valid email address");
-                        showError(emailField, loginError, "Please verify your input information");
+                        Log.e("LoginHandler", "There was an error handling the login, please check connection");
                     }
                 }
-            } else {
-                Log.e("LoginHandler", "There was an error handling the login, please check connection");
-            }
+            }, 750);
         }
     }
 
-    private class onSharedLock extends AsyncTask<String, Void, String> {
+    private class onSharedLock extends AsyncTask<Void, Void, String> {
+
+        android.app.AlertDialog progressDialog = new SpotsDialog(LoginActivity.this, R.style.loadingDialog);
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            progressDialog.setCancelable(false);
+            progressDialog.show();
         }
 
         @Override
-        protected String doInBackground(String... params) {
-            String share_check_url = "https://lockee-cloned-andrei-b.c9users.io/android/share_check/";
-            String shareID = params[0];
+        protected String doInBackground(Void... params) {
+            String shareCheck_url = "https://lockee-andrei-b.c9users.io/android/share_check/";
             // This is the login request
             try {
-                URL url = new URL(share_check_url);
+                URL url = new URL(shareCheck_url);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoOutput(true);
@@ -394,24 +412,35 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(String result) {
-            if(result != null) {
-                switch (result) {
-                    case "wrong code":
-                        shareIDField.requestFocus();
-                        showError(shareIDField, shareIDError, "This share ID doesn't exist");
-                        break;
-                    default:
-                        SaveSharedPreference.setSharedNickname(LoginActivity.this, result);
-                        SaveSharedPreference.setSharedID(LoginActivity.this, shareID);
-                        Intent i = new Intent(LoginActivity.this, SharedControlActivity.class);
-                        startActivity(i);
-                        finish();
-                        break;
+        protected void onPostExecute(final String result) {
+            new Handler().postDelayed(new Runnable(){
+                @Override
+                public void run() {
+                    progressDialog.dismiss();
+                    if (result != null) {
+                        switch (result) {
+                            case "success":
+                                SaveSharedPreference.setSharedID(LoginActivity.this, shareID);
+                                Intent i = new Intent(LoginActivity.this, SharedControlActivity.class);
+                                startActivity(i);
+                                finish();
+                                break;
+                            case "wrong code":
+                                shareIDField.requestFocus();
+                                showError(shareIDField, shareIDError, "This share ID doesn't exist");
+                                break;
+                            case "expired":
+                                shareIDField.requestFocus();
+                                showError(shareIDField, shareIDError, "This share ID has expired");
+                                break;
+                            default:
+                                break;
+                        }
+                    } else {
+                        Log.e("AddSharedLockHandler", "There was an error registering the shared lock, please check connection");
+                    }
                 }
-            } else {
-                Log.e("AddSharedLockHandler", "There was an error registering the shared lock, please check connection");
-            }
+            }, 750);
         }
     }
 
