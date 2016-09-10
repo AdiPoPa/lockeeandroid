@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
@@ -29,6 +30,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import dmax.dialog.SpotsDialog;
+
 public class RegisterActivity extends AppCompatActivity {
 
     EditText nameField, emailField, passwordField, confirmPasswordField;
@@ -41,6 +44,8 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register_screen);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         linearLayout = (LinearLayout) findViewById(R.id.linearLayout);
 
@@ -232,6 +237,17 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                finish();
+                return true;
+            }
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     // Method called when the register button is pressed
 
     public void onRegister(View view){
@@ -266,14 +282,18 @@ public class RegisterActivity extends AppCompatActivity {
 
     private class startRegister extends AsyncTask<String, Void, String> {
 
+        android.app.AlertDialog progressDialog = new SpotsDialog(RegisterActivity.this, R.style.loadingDialog);
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            progressDialog.setCancelable(false);
+            progressDialog.show();
         }
 
         @Override
         protected String doInBackground(String... params) {
-            String register_url = "https://lockee-cloned-andrei-b.c9users.io/android/register/";
+            String register_url = "https://lockee-andrei-b.c9users.io/android/register/";
             String name = params[0];
             String email = params[1];
             String password = params[2];
@@ -311,23 +331,26 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(String result) {
-            if(result != null) {
-                if(result.equals("register success")) {
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
+        protected void onPostExecute(final String result) {
+            super.onPostExecute(result);
+            new Handler().postDelayed(new Runnable(){
+                @Override
+                public void run() {
+                    progressDialog.dismiss();
+                    if(result != null) {
+                        if(result.equals("register success")) {
+                            LoginActivity.loginActivity.finish();
                             SaveSharedPreference.setLoginStatus(RegisterActivity.this, email);
                             MainActivity.registerNotification = "show";
                             Intent i = new Intent(RegisterActivity.this, MainActivity.class);
                             startActivity(i);
                             finish();
                         }
-                    }, 200);
+                    } else {
+                        Log.e("RegisterHandler", "There was an error handling the register, please check connection");
+                    }
                 }
-            } else {
-                Log.e("RegisterHandler", "There was an error handling the register, please check connection");
-            }
+            }, 1000);
         }
     }
 
@@ -341,9 +364,9 @@ public class RegisterActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             String email = params[0];
-            String verify_url = "https://lockee-cloned-andrei-b.c9users.io/android/verify_register/";
+            String verifyEmail_url = "https://lockee-andrei-b.c9users.io/android/verify_register/";
             try {
-                URL url = new URL(verify_url);
+                URL url = new URL(verifyEmail_url);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoOutput(true);
