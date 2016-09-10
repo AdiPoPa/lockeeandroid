@@ -29,7 +29,8 @@
             android:layout_height="26dp"
             android:src="@drawable/ic_about_white_48dp"
             android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentEnd="true"
+            android:foregroundGravity="center_vertical" />
 
     </RelativeLayout>
 
@@ -64,6 +65,5 @@
         android:textSize="12sp"
         android:id="@+id/aboutCredits"
         android:layout_gravity="right" />
-
 
 </LinearLayout>
