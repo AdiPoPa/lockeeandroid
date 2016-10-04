@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/bg_color"
+    android:background="@color/bg_light"
     tools:context="com.adipopa.lockee.ControlActivity">
 
     <RelativeLayout
@@ -17,6 +17,7 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="Lock Nickname"
             android:textSize="32sp"
+            android:textStyle="bold"
             android:gravity="center"
             android:id="@+id/lockNickname"
             android:paddingLeft="50dp"
@@ -40,7 +41,7 @@
             android:id="@+id/controlView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/animatedbuttonunlock"
+            android:src="@drawable/animated_button_unlock_white"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true" />
 
@@ -57,6 +58,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="LockID: "
+                android:textColor="@color/input_login_hint"
                 android:textSize="18sp"
                 android:id="@+id/lockIDHolder"
                 android:layout_gravity="left|center_vertical"
@@ -69,10 +71,12 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="LockID"
                 android:textSize="18sp"
+                android:textColor="@color/input_login_hint"
                 android:id="@+id/lockID"
                 android:layout_gravity="center_vertical|right"
                 android:layout_alignParentTop="true"
-                android:layout_toEndOf="@+id/lockIDHolder" />
+                android:layout_toEndOf="@+id/lockIDHolder"
+                android:onClick="onCopyLockID"/>
 
         </RelativeLayout>
 
@@ -91,6 +95,7 @@
             android:text="ShareID: "
             android:textSize="18sp"
             android:id="@+id/shareIDHolder"
+            android:textColor="@color/input_login_hint"
             android:layout_marginLeft="10dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
@@ -104,16 +109,17 @@
             android:text="ShareID"
             android:textSize="18sp"
             android:id="@+id/shareID"
+            android:textColor="@color/input_login_hint"
             android:layout_marginLeft="5dp"
             android:layout_alignTop="@+id/shareIDHolder"
             android:layout_toEndOf="@+id/shareIDHolder"
-            android:onClick="onCopyShareID" />
+            android:onClick="onCopyStaticShareID" />
 
         <Button
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:id="@+id/shareIDButton"
-            android:background="@drawable/ic_refresh_white_48dp"
+            android:background="@drawable/ic_refresh_black_48dp"
             android:layout_marginRight="10dp"
             android:onClick="onGenerateShareID"
             android:layout_alignParentBottom="true"
@@ -131,6 +137,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/input_login_hint"
             android:text="Session"
             android:id="@+id/sessionShare"
             android:layout_alignParentBottom="true"

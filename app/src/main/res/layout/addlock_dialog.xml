@@ -3,7 +3,6 @@
     android:id="@+id/layout_root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/bg_dialog"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:weightSum="1">
@@ -42,8 +41,7 @@
             android:padding="10dp"
             android:paddingLeft="25dp"
             android:paddingRight="25dp"
-            android:singleLine="true"
-            android:textColor="@color/white"
+            android:textColor="#000000"
             android:textColorHint="@color/input_login_hint" />
 
         <TextView
@@ -69,8 +67,7 @@
             android:hint="Lock's inner ID"
             android:inputType="textEmailAddress"
             android:padding="10dp"
-            android:singleLine="true"
-            android:textColor="@color/white"
+            android:textColor="#000000"
             android:textColorHint="@color/input_login_hint" />
 
         <TextView

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/bg_color"
+    android:background="@color/bg_light"
     tools:context="com.adipopa.lockee.ControlActivity">
 
     <RelativeLayout
@@ -16,6 +16,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="Lock Nickname"
+            android:textStyle="bold"
             android:textSize="32sp"
             android:gravity="center"
             android:id="@+id/lockNickname"
@@ -40,7 +41,7 @@
             android:id="@+id/controlView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/animatedbuttonunlock"
+            android:src="@drawable/animated_button_unlock_white"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true" />
 
@@ -58,6 +59,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="ShareID: "
                 android:textSize="18sp"
+                android:textColor="@color/input_login_hint"
                 android:id="@+id/shareIDHolder"
                 android:layout_gravity="left|center_vertical"
                 android:layout_alignParentTop="true"
@@ -69,10 +71,12 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="ShareID"
                 android:textSize="18sp"
+                android:textColor="@color/input_login_hint"
                 android:id="@+id/shareID"
                 android:layout_gravity="center_vertical|right"
                 android:layout_alignParentTop="true"
-                android:layout_toEndOf="@+id/shareIDHolder" />
+                android:layout_toEndOf="@+id/shareIDHolder"
+                android:onClick="onCopyShareID"/>
 
         </RelativeLayout>
 

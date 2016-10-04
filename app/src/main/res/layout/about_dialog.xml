@@ -3,7 +3,6 @@
     android:id="@+id/layout_root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/bg_dialog"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:weightSum="1">
@@ -27,7 +26,7 @@
         <ImageView
             android:layout_width="26dp"
             android:layout_height="26dp"
-            android:src="@drawable/ic_about_white_48dp"
+            android:src="@drawable/ic_about_black_48dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:foregroundGravity="center_vertical" />
@@ -65,5 +64,6 @@
         android:textSize="12sp"
         android:id="@+id/aboutCredits"
         android:layout_gravity="right" />
+
 
 </LinearLayout>

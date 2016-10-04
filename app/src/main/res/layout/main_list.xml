@@ -2,7 +2,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/bg_color"
     android:padding="10dp">
 
     <TextView
@@ -10,7 +9,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="nickname"
-        android:textColor="@color/white"
+        android:textColor="#000000"
         android:textSize="24sp"
         android:id="@+id/nicknameText"
         android:layout_alignParentTop="true"
@@ -32,7 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/lockIcon"
-        android:src="@drawable/ic_lock_open_white_48dp"
+        android:src="@drawable/ic_lock_open_black_48dp"
         android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

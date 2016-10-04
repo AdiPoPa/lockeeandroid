@@ -4,7 +4,6 @@
     android:id="@+id/linearLayout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/bg_register"
     android:gravity="center"
     android:onClick="onReleaseFocus"
     android:orientation="vertical"
@@ -30,8 +29,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/registerWelcome"
+            android:textStyle="bold"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="@color/white"
             android:textIsSelectable="false"
             android:textSize="26sp"/>
 
@@ -54,8 +53,7 @@
             android:hint="@string/hint_name"
             android:inputType="textPersonName"
             android:padding="10dp"
-            android:singleLine="true"
-            android:textColor="@color/white"
+            android:textColor="#000000"
             android:textColorHint="@color/input_register_hint" />
 
         <TextView
@@ -81,8 +79,7 @@
             android:hint="@string/hint_email"
             android:inputType="textEmailAddress"
             android:padding="10dp"
-            android:singleLine="true"
-            android:textColor="@color/white"
+            android:textColor="#000000"
             android:textColorHint="@color/input_register_hint" />
 
         <TextView
@@ -108,8 +105,7 @@
             android:hint="@string/hint_password"
             android:inputType="textPassword"
             android:padding="10dp"
-            android:singleLine="true"
-            android:textColor="@color/white"
+            android:textColor="#000000"
             android:textColorHint="@color/input_register_hint" />
 
         <TextView
@@ -135,8 +131,7 @@
             android:hint="@string/hint_confirmpassword"
             android:inputType="textPassword"
             android:padding="10dp"
-            android:singleLine="true"
-            android:textColor="@color/white"
+            android:textColor="#000000"
             android:textColorHint="@color/input_register_hint" />
 
         <TextView
@@ -158,8 +153,9 @@
             android:layout_marginTop="5dp"
             android:checked="false"
             android:text="@string/terms"
-            android:textColor="@color/white"
             android:textSize="16sp"
+            android:textColor="#000000"
+            android:textStyle="bold"
             app:buttonTint="@color/colorAccent" />
 
         <android.support.v7.widget.AppCompatCheckBox
@@ -192,7 +188,7 @@
         android:background="@drawable/button_style"
         android:onClick="onRegister"
         android:text="@string/registerButton"
-        android:textColor="#FFFFFF"
+        android:textColor="#000000"
         android:textSize="14sp"
         android:textStyle="bold" />
 

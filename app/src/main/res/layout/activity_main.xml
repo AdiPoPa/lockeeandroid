@@ -3,8 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:fitsSystemWindows="true"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="@color/bg_color">
+    android:layout_height="fill_parent">
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -54,7 +53,7 @@
             android:layout_margin="20dp"
             android:layout_gravity="bottom|end"
             android:scaleType="center"
-            android:src="@drawable/ic_add_black_36dp"/>
+            android:src="@drawable/ic_add_white_36dp"/>
 
     </android.support.design.widget.CoordinatorLayout>
 

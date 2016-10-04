@@ -3,7 +3,6 @@
     android:id="@+id/layout_root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/bg_dialog"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:weightSum="1">
@@ -29,6 +28,32 @@
         android:src="@color/colorAccent" />
 
     <EditText
+        android:id="@+id/shareNameField"
+        android:layout_width="265dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="3dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/edit_text_style"
+        android:hint="Your full name"
+        android:inputType="textEmailAddress"
+        android:padding="10dp"
+        android:textColor="#000000"
+        android:textColorHint="@color/input_login_hint" />
+
+    <TextView
+        android:id="@+id/shareNameError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Small Text"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/error"
+        android:textStyle="italic"
+        android:layout_gravity="left"
+        android:layout_marginLeft="30dp"/>
+
+    <EditText
         android:id="@+id/shareIDField"
         android:layout_width="265dp"
         android:layout_height="wrap_content"
@@ -40,8 +65,7 @@
         android:hint="Lock's shared ID"
         android:inputType="textEmailAddress"
         android:padding="10dp"
-        android:singleLine="true"
-        android:textColor="@color/white"
+        android:textColor="#000000"
         android:textColorHint="@color/input_login_hint" />
 
     <TextView
