@@ -1,3 +1,13 @@
+/****************************************************************************************
+ *                                                                                       *
+ *   Copyright (C) 2016 Glimpse Team                                                     *
+ *                                                                                       *
+ *       This file is part of the Lockee project and is hereby protected by copyright    *
+ *   and can not be copied and/or distributed without the express permission of all      *
+ *   the Glimpse Team members.                                                           *
+ *                                                                                       *
+ ****************************************************************************************/
+
 package com.adipopa.lockee;
 
 import android.animation.AnimatorSet;
@@ -32,17 +42,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -62,6 +69,7 @@ public class ControlActivity extends AppCompatActivity {
     TextView shareIDText, shareSession, sessionShareIDText, expirationDateText, lockNicknameText, lockIDText, expirationDateHolder;
     RelativeLayout controlLayout;
     LinearLayout sessionDialog;
+    Boolean inProgress = false;
 
     private static final String TAG_LOCK_DETAILS = "lockDetails";
     private static final String TAG_NICKNAME = "nickname";
@@ -85,8 +93,8 @@ public class ControlActivity extends AppCompatActivity {
         controlView = (GifImageView)findViewById(R.id.controlView);
 
         try {
-            unlockDrawable = new GifDrawable(getResources(), R.drawable.animatedbuttonunlock);
-            lockDrawable = new GifDrawable(getResources(), R.drawable.animatedbuttonlock);
+            unlockDrawable = new GifDrawable(getResources(), R.drawable.animated_button_unlock_white);
+            lockDrawable = new GifDrawable(getResources(), R.drawable.animated_button_lock_white);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -110,7 +118,7 @@ public class ControlActivity extends AppCompatActivity {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                shareSession.setTextColor(Color.parseColor("#FFFFFF"));
+                                shareSession.setTextColor(Color.parseColor("#454545"));
                                 final ViewGroup nullParent = null;
                                 LayoutInflater li = LayoutInflater.from(context);
                                 View dialogView = li.inflate(R.layout.session_dialog, nullParent);
@@ -136,21 +144,21 @@ public class ControlActivity extends AppCompatActivity {
                                 dayPicker.setValue(0);
                                 dayPicker.setWrapSelectorWheel(false);
 
-                                String[] hours = new String[25];
+                                String[] hours = new String[24];
                                 for(int i=0; i<hours.length; i++)
                                     hours[i] = Integer.toString(i);
                                 hourPicker.setDisplayedValues(hours);
                                 hourPicker.setMinValue(0);
-                                hourPicker.setMaxValue(24);
+                                hourPicker.setMaxValue(23);
                                 hourPicker.setValue(0);
                                 hourPicker.setWrapSelectorWheel(false);
 
-                                String[] mins = new String[61];
+                                String[] mins = new String[60];
                                 for(int i=0; i<mins.length; i++)
                                     mins[i] = Integer.toString(i);
                                 minutePicker.setDisplayedValues(mins);
                                 minutePicker.setMinValue(0);
-                                minutePicker.setMaxValue(60);
+                                minutePicker.setMaxValue(59);
                                 minutePicker.setValue(0);
                                 minutePicker.setWrapSelectorWheel(false);
 
@@ -255,7 +263,7 @@ public class ControlActivity extends AppCompatActivity {
                 return true;
             }
             case R.id.menu_remove: {
-                new onRemoveLock().execute(email, nickname);
+                new onRemoveLock().execute();
                 return true;
             }
             default:
@@ -264,21 +272,23 @@ public class ControlActivity extends AppCompatActivity {
     }
 
     public void onControl(View view){
-        new startControl().execute(lockInnerID);
+        if(!inProgress) {
+            new startControl().execute();
+        }
     }
 
-    private class startControl extends AsyncTask<String, Void, String> {
+    private class startControl extends AsyncTask<Void, Void, String> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            inProgress = true;
             unlockDrawable.setSpeed(5.0f);
             lockDrawable.setSpeed(5.0f);
         }
 
         @Override
-        protected String doInBackground(String... params) {
-            String lockInnerID = params[0];
+        protected String doInBackground(Void... params) {
             String controlLock_url = "https://lockee-andrei-b.c9users.io/android/lock_mechanic/";
             // This is the login request
             try {
@@ -287,13 +297,13 @@ public class ControlActivity extends AppCompatActivity {
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoOutput(true);
                 httpURLConnection.setDoInput(true);
-                OutputStream outputStream = httpURLConnection.getOutputStream();
-                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
-                String postData = URLEncoder.encode("lockInnerID", "UTF-8") + "=" + URLEncoder.encode(lockInnerID, "UTF-8");
-                bufferedWriter.write(postData);
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("userEmail", email);
+                jsonParam.put("lockInnerID", lockInnerID);
+                DataOutputStream bufferedWriter = new DataOutputStream(httpURLConnection.getOutputStream());
+                bufferedWriter.writeBytes(jsonParam.toString());
                 bufferedWriter.flush();
                 bufferedWriter.close();
-                outputStream.close();
                 InputStream inputStream = httpURLConnection.getInputStream();
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
                 String result = "";
@@ -305,7 +315,7 @@ public class ControlActivity extends AppCompatActivity {
                 inputStream.close();
                 httpURLConnection.disconnect();
                 return result;
-            } catch (IOException e) {
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
             return null;
@@ -334,6 +344,7 @@ public class ControlActivity extends AppCompatActivity {
                                 finish();
                                 break;
                         }
+                        inProgress = false;
                     } else {
                         Log.e("LockControlHandler", "There was an error handling the control, please check connection");
                     }
@@ -349,19 +360,34 @@ public class ControlActivity extends AppCompatActivity {
         final AnimatorSet mAnimationSet = new AnimatorSet();
         mAnimationSet.play(rotate);
         mAnimationSet.start();
-        new startGenerateStaticShareID().execute(email, nickname);
+        new startGenerateStaticShareID().execute();
     }
 
-    public void onCopyShareID(View view){
-        TextView shareID = (TextView) findViewById(R.id.shareID);
+    public void onCopyStaticShareID(View view){
         ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText("shareID", shareID.getText().toString());
+        ClipData clip = ClipData.newPlainText("staticShareID", shareIDText.getText().toString());
         clipboard.setPrimaryClip(clip);
-        Toast toast = Toast.makeText(ControlActivity.this, "ShareID copied to your clipboard", Toast.LENGTH_SHORT);
+        Toast toast = Toast.makeText(ControlActivity.this, "Static ShareID copied to your clipboard", Toast.LENGTH_SHORT);
         toast.show();
     }
 
-    private class startGenerateStaticShareID extends AsyncTask<String, Void, String> {
+    public void onCopyLockID(View view){
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("lockID", lockIDText.getText().toString());
+        clipboard.setPrimaryClip(clip);
+        Toast toast = Toast.makeText(ControlActivity.this, "LockID copied to your clipboard", Toast.LENGTH_SHORT);
+        toast.show();
+    }
+
+    public void onCopySessionShareID(View view){
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("sessionShareID", sessionShareIDText.getText().toString());
+        clipboard.setPrimaryClip(clip);
+        Toast toast = Toast.makeText(ControlActivity.this, "Session ShareID copied to your clipboard", Toast.LENGTH_SHORT);
+        toast.show();
+    }
+
+    private class startGenerateStaticShareID extends AsyncTask<Void, Void, String> {
 
         @Override
         protected void onPreExecute() {
@@ -369,9 +395,7 @@ public class ControlActivity extends AppCompatActivity {
         }
 
         @Override
-        protected String doInBackground(String... params) {
-            String email = params[0];
-            String nickname = params[1];
+        protected String doInBackground(Void... params) {
             String generateStaticShareID_url = "https://lockee-andrei-b.c9users.io/android/generate_static/";
             // This is the login request
             try {
@@ -380,14 +404,13 @@ public class ControlActivity extends AppCompatActivity {
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoOutput(true);
                 httpURLConnection.setDoInput(true);
-                OutputStream outputStream = httpURLConnection.getOutputStream();
-                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
-                String postData = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8") + "&" +
-                        URLEncoder.encode("nickname", "UTF-8") + "=" + URLEncoder.encode(nickname, "UTF-8");
-                bufferedWriter.write(postData);
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("username", email);
+                jsonParam.put("nickname", nickname);
+                DataOutputStream bufferedWriter = new DataOutputStream(httpURLConnection.getOutputStream());
+                bufferedWriter.writeBytes(jsonParam.toString());
                 bufferedWriter.flush();
                 bufferedWriter.close();
-                outputStream.close();
                 InputStream inputStream = httpURLConnection.getInputStream();
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
                 String result = "";
@@ -399,7 +422,7 @@ public class ControlActivity extends AppCompatActivity {
                 inputStream.close();
                 httpURLConnection.disconnect();
                 return result;
-            } catch (IOException e) {
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
             return null;
@@ -419,7 +442,7 @@ public class ControlActivity extends AppCompatActivity {
         }
     }
 
-    private class onRemoveLock extends AsyncTask<String, Void, String> {
+    private class onRemoveLock extends AsyncTask<Void, Void, String> {
 
         @Override
         protected void onPreExecute() {
@@ -427,9 +450,7 @@ public class ControlActivity extends AppCompatActivity {
         }
 
         @Override
-        protected String doInBackground(String... params) {
-            String email = params[0];
-            String nickname = params[1];
+        protected String doInBackground(Void... params) {
             String removeLock_url = "https://lockee-andrei-b.c9users.io/android/remove/";
             // This is the login request
             try {
@@ -438,14 +459,13 @@ public class ControlActivity extends AppCompatActivity {
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoOutput(true);
                 httpURLConnection.setDoInput(true);
-                OutputStream outputStream = httpURLConnection.getOutputStream();
-                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
-                String postData = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8") + "&" +
-                        URLEncoder.encode("nickname", "UTF-8") + "=" + URLEncoder.encode(nickname, "UTF-8");
-                bufferedWriter.write(postData);
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("username", email);
+                jsonParam.put("nickname", nickname);
+                DataOutputStream bufferedWriter = new DataOutputStream(httpURLConnection.getOutputStream());
+                bufferedWriter.writeBytes(jsonParam.toString());
                 bufferedWriter.flush();
                 bufferedWriter.close();
-                outputStream.close();
                 InputStream inputStream = httpURLConnection.getInputStream();
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
                 String result = "";
@@ -457,7 +477,7 @@ public class ControlActivity extends AppCompatActivity {
                 inputStream.close();
                 httpURLConnection.disconnect();
                 return result;
-            } catch (IOException e) {
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
             return null;
@@ -520,21 +540,16 @@ public class ControlActivity extends AppCompatActivity {
                     conn.setDoInput(true);
                     conn.setDoOutput(true);
                     conn.setRequestMethod("POST");
-
-                    OutputStream os = conn.getOutputStream();
-                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-
-                    String result = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8") + '&' +
-                            URLEncoder.encode("nickname", "UTF-8") + "=" + URLEncoder.encode(nickname, "UTF-8") + '&' +
-                            URLEncoder.encode("days", "UTF-8") + "=" + URLEncoder.encode(days, "UTF-8") + '&' +
-                            URLEncoder.encode("hours", "UTF-8") + "=" + URLEncoder.encode(hours, "UTF-8") + '&' +
-                            URLEncoder.encode("minutes", "UTF-8") + "=" + URLEncoder.encode(minutes, "UTF-8");
-
-                    writer.write(result);
-
-                    writer.flush();
-                    writer.close();
-                    os.close();
+                    JSONObject jsonParam = new JSONObject();
+                    jsonParam.put("username", email);
+                    jsonParam.put("nickname", nickname);
+                    jsonParam.put("days", days);
+                    jsonParam.put("hours", hours);
+                    jsonParam.put("minutes", minutes);
+                    DataOutputStream bufferedWriter = new DataOutputStream(conn.getOutputStream());
+                    bufferedWriter.writeBytes(jsonParam.toString());
+                    bufferedWriter.flush();
+                    bufferedWriter.close();
                 } else {
                     URL url = new URL(getSession_url);
 
@@ -544,18 +559,13 @@ public class ControlActivity extends AppCompatActivity {
                     conn.setDoInput(true);
                     conn.setDoOutput(true);
                     conn.setRequestMethod("POST");
-
-                    OutputStream os = conn.getOutputStream();
-                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-
-                    String result = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8") + '&' +
-                            URLEncoder.encode("nickname", "UTF-8") + "=" + URLEncoder.encode(nickname, "UTF-8");
-
-                    writer.write(result);
-
-                    writer.flush();
-                    writer.close();
-                    os.close();
+                    JSONObject jsonParam = new JSONObject();
+                    jsonParam.put("username", email);
+                    jsonParam.put("nickname", nickname);
+                    DataOutputStream bufferedWriter = new DataOutputStream(conn.getOutputStream());
+                    bufferedWriter.writeBytes(jsonParam.toString());
+                    bufferedWriter.flush();
+                    bufferedWriter.close();
                 }
 
                 int responseCode = conn.getResponseCode();
@@ -639,17 +649,13 @@ public class ControlActivity extends AppCompatActivity {
                 conn.setDoOutput(true);
                 conn.setRequestMethod("POST");
 
-                OutputStream os = conn.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(
-                        new OutputStreamWriter(os, "UTF-8"));
-
-                String result = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8") + '&' +
-                        URLEncoder.encode("lockInnerID", "UTF-8") + "=" + URLEncoder.encode(lockInnerID, "UTF-8");
-
-                writer.write(result);
-                writer.flush();
-                writer.close();
-                os.close();
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("username", email);
+                jsonParam.put("lockInnerID", lockInnerID);
+                DataOutputStream bufferedWriter = new DataOutputStream(conn.getOutputStream());
+                bufferedWriter.writeBytes(jsonParam.toString());
+                bufferedWriter.flush();
+                bufferedWriter.close();
 
                 int responseCode = conn.getResponseCode();
 
