@@ -1,3 +1,13 @@
+/****************************************************************************************
+*                                                                                       *
+*   Copyright (C) 2016 Glimpse Team                                                     *
+*                                                                                       *
+*       This file is part of the Lockee project and is hereby protected by copyright    *
+*   and can not be copied and/or distributed without the express permission of all      *
+*   the Glimpse Team members.                                                           *
+*                                                                                       *
+****************************************************************************************/
+
 package com.adipopa.lockee;
 
 import android.animation.Animator;
@@ -42,17 +52,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -87,188 +94,188 @@ public class MainActivity extends AppCompatActivity {
             Intent i = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(i);
             finish();
-        } else {
-            mainLayout = (CoordinatorLayout) findViewById(R.id.mainLayout);
-            email = SaveSharedPreference.getLoginStatus(this);
-            noLocks = (TextView) findViewById(R.id.noLocks);
+        }
 
-            final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        mainLayout = (CoordinatorLayout) findViewById(R.id.mainLayout);
+        email = SaveSharedPreference.getLoginStatus(this);
+        noLocks = (TextView) findViewById(R.id.noLocks);
 
-            final FrameLayout registerSuccessful = (FrameLayout) findViewById(R.id.registerNotification);
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
-            if (registerNotification.equals("show")) {
-                mainLayout.setVisibility(View.INVISIBLE);
-                final ObjectAnimator fadeIn = ObjectAnimator.ofFloat(registerSuccessful, "alpha", 0f, 1f);
-                fadeIn.setDuration(2000);
-                final ObjectAnimator fadeOut = ObjectAnimator.ofFloat(registerSuccessful, "alpha",  1f, 0f);
-                fadeOut.setDuration(2000);
+        final FrameLayout registerSuccessful = (FrameLayout) findViewById(R.id.registerNotification);
 
-                final AnimatorSet mAnimationSet = new AnimatorSet();
+        if (registerNotification.equals("show")) {
+            mainLayout.setVisibility(View.INVISIBLE);
+            final ObjectAnimator fadeIn = ObjectAnimator.ofFloat(registerSuccessful, "alpha", 0f, 1f);
+            fadeIn.setDuration(2000);
+            final ObjectAnimator fadeOut = ObjectAnimator.ofFloat(registerSuccessful, "alpha",  1f, 0f);
+            fadeOut.setDuration(2000);
 
-                mAnimationSet.play(fadeIn);
+            final AnimatorSet mAnimationSet = new AnimatorSet();
 
-                mAnimationSet.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        mAnimationSet.setStartDelay(3000);
-                        mAnimationSet.play(fadeOut);
-                        mAnimationSet.start();
-                        new Handler().postDelayed(new Runnable(){
-                            @Override
-                            public void run() {
-                                mAnimationSet.end();
-                                registerNotification = "hide";
-                                new getLocks().execute();
-                            }
-                        }, 5000);
-                    }
-                });
-                mAnimationSet.start();
-            }
+            mAnimationSet.play(fadeIn);
 
-            mainList = (ListView) findViewById(R.id.mainList);
-            mainList.addFooterView(new View(MainActivity.this));
-
-            mainList.setOnItemClickListener(
-                    new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            TextView lockIDText = (TextView) view.findViewById(R.id.lockIDText);
-                            Intent intent = new Intent(MainActivity.this, ControlActivity.class);
-                            String lockID = lockIDText.getText().toString();
-                            intent.putExtra("lockID", lockID);
-                            startActivity(intent);
-                        }
-                    }
-            );
-
-            fab.setOnClickListener(new View.OnClickListener() {
+            mAnimationSet.addListener(new AnimatorListenerAdapter() {
                 @Override
-                public void onClick(View view) {
-                    final ViewGroup nullParent = null;
-                    LayoutInflater li = LayoutInflater.from(context);
-                    View dialogView = li.inflate(R.layout.addlock_dialog, nullParent);
-
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context, R.style.alertDialog);
-
-                    // set prompts.xml to alertdialog builder
-                    alertDialogBuilder.setView(dialogView);
-
-                    nicknameField = (EditText) dialogView.findViewById(R.id.nicknameField);
-                    lockIDField = (EditText) dialogView.findViewById(R.id.lockIDField);
-
-                    nicknameError = (TextView) dialogView.findViewById(R.id.nicknameError);
-                    lockIDError = (TextView) dialogView.findViewById(R.id.lockIDError);
-
-                    final RadioGroup radioGroup = (RadioGroup) dialogView.findViewById(R.id.orientation);
-
-                    nicknameError.setVisibility(View.GONE);
-                    lockIDError.setVisibility(View.GONE);
-
-                    // set dialog message
-                    alertDialogBuilder.setPositiveButton("Add the lock", null);
-
-                    // create alert dialog
-                    alertDialog = alertDialogBuilder.create();
-
-                    alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    mAnimationSet.setStartDelay(3000);
+                    mAnimationSet.play(fadeOut);
+                    mAnimationSet.start();
+                    new Handler().postDelayed(new Runnable(){
                         @Override
-                        public void onShow(DialogInterface dialog) {
-                            Button b = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                            b.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    nickname = nicknameField.getText().toString();
-                                    lockInnerID = lockIDField.getText().toString();
-                                    RadioButton orientationButton = (RadioButton) radioGroup.findViewById(radioGroup.getCheckedRadioButtonId());
-                                    orientation = orientationButton.getText().toString().toLowerCase();
-                                    if(nickname.isEmpty()) {
-                                        emptyField(nicknameField);
-                                    }
-                                    if(lockInnerID.isEmpty()){
-                                        emptyField(lockIDField);
-                                    }
-                                    if(!nickname.isEmpty() && !lockInnerID.isEmpty()){
-                                        new onAddLock().execute();
-                                    }
-                                }
-                            });
+                        public void run() {
+                            mAnimationSet.end();
+                            registerNotification = "hide";
+                            new getLocks().execute();
                         }
-                    });
+                    }, 5000);
+                }
+            });
+            mAnimationSet.start();
+        }
 
-                    // show it
-                    alertDialog.show();
+        mainList = (ListView) findViewById(R.id.mainList);
+        mainList.addFooterView(new View(MainActivity.this));
 
-                    nicknameField.addTextChangedListener(new TextWatcher() {
-                        @Override
-                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                            String nickname = nicknameField.getText().toString();
-                            if (nickname.isEmpty()) {
-                                emptyField(nicknameField);
-                            } else {
-                                hideError(nicknameField, nicknameError);
-                            }
-                        }
+        mainList.setOnItemClickListener(
+                new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        TextView lockIDText = (TextView) view.findViewById(R.id.lockIDText);
+                        Intent intent = new Intent(MainActivity.this, ControlActivity.class);
+                        String lockID = lockIDText.getText().toString();
+                        intent.putExtra("lockID", lockID);
+                        startActivity(intent);
+                    }
+                }
+        );
 
-                        @Override
-                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                        }
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final ViewGroup nullParent = null;
+                LayoutInflater li = LayoutInflater.from(context);
+                View dialogView = li.inflate(R.layout.addlock_dialog, nullParent);
 
-                        @Override
-                        public void afterTextChanged(Editable editable) {
-                        }
-                    });
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context, R.style.alertDialog);
 
-                    lockIDField.addTextChangedListener(new TextWatcher() {
-                        @Override
-                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                            String lockInnerID = lockIDField.getText().toString();
-                            if (lockInnerID.isEmpty()) {
-                                emptyField(lockIDField);
-                            } else{
-                                hideError(lockIDField, lockIDError);
-                            }
-                        }
+                // set prompts.xml to alertdialog builder
+                alertDialogBuilder.setView(dialogView);
 
-                        @Override
-                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                nicknameField = (EditText) dialogView.findViewById(R.id.nicknameField);
+                lockIDField = (EditText) dialogView.findViewById(R.id.lockIDField);
 
-                        }
+                nicknameError = (TextView) dialogView.findViewById(R.id.nicknameError);
+                lockIDError = (TextView) dialogView.findViewById(R.id.lockIDError);
 
-                        @Override
-                        public void afterTextChanged(Editable editable) {
+                final RadioGroup radioGroup = (RadioGroup) dialogView.findViewById(R.id.orientation);
 
-                        }
-                    });
+                nicknameError.setVisibility(View.GONE);
+                lockIDError.setVisibility(View.GONE);
 
-                    nicknameField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                        @Override
-                        public void onFocusChange(View view, boolean b) {
-                            if(!b){
-                                String nickname = nicknameField.getText().toString();
-                                if(nickname.isEmpty()){
+                // set dialog message
+                alertDialogBuilder.setPositiveButton("Add the lock", null);
+
+                // create alert dialog
+                alertDialog = alertDialogBuilder.create();
+
+                alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface dialog) {
+                        Button b = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                        b.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                nickname = nicknameField.getText().toString();
+                                lockInnerID = lockIDField.getText().toString();
+                                RadioButton orientationButton = (RadioButton) radioGroup.findViewById(radioGroup.getCheckedRadioButtonId());
+                                orientation = orientationButton.getText().toString().toLowerCase();
+                                if(nickname.isEmpty()) {
                                     emptyField(nicknameField);
                                 }
-                            }
-                        }
-                    });
-
-                    lockIDField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                        @Override
-                        public void onFocusChange(View view, boolean b) {
-                            if(!b){
-                                String lockInnerID = lockIDField.getText().toString();
                                 if(lockInnerID.isEmpty()){
                                     emptyField(lockIDField);
                                 }
+                                if(!nickname.isEmpty() && !lockInnerID.isEmpty()){
+                                    new onAddLock().execute();
+                                }
+                            }
+                        });
+                    }
+                });
+
+                // show it
+                alertDialog.show();
+
+                nicknameField.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        String nickname = nicknameField.getText().toString();
+                        if (nickname.isEmpty()) {
+                            emptyField(nicknameField);
+                        } else {
+                            hideError(nicknameField, nicknameError);
+                        }
+                    }
+
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                    }
+                });
+
+                lockIDField.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        String lockInnerID = lockIDField.getText().toString();
+                        if (lockInnerID.isEmpty()) {
+                            emptyField(lockIDField);
+                        } else{
+                            hideError(lockIDField, lockIDError);
+                        }
+                    }
+
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+
+                nicknameField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View view, boolean b) {
+                        if(!b){
+                            String nickname = nicknameField.getText().toString();
+                            if(nickname.isEmpty()){
+                                emptyField(nicknameField);
                             }
                         }
-                    });
+                    }
+                });
 
-                }
-            });
-        }
+                lockIDField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View view, boolean b) {
+                        if(!b){
+                            String lockInnerID = lockIDField.getText().toString();
+                            if(lockInnerID.isEmpty()){
+                                emptyField(lockIDField);
+                            }
+                        }
+                    }
+                });
+
+            }
+        });
     }
 
     @Override
@@ -385,17 +392,12 @@ public class MainActivity extends AppCompatActivity {
                 conn.setRequestMethod("POST");
 
                 if (email != null) {
-                    OutputStream os = conn.getOutputStream();
-                    BufferedWriter writer = new BufferedWriter(
-                            new OutputStreamWriter(os, "UTF-8"));
-
-                    String result = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8");
-
-                    writer.write(result);
-
-                    writer.flush();
-                    writer.close();
-                    os.close();
+                    JSONObject jsonParam = new JSONObject();
+                    jsonParam.put("username", email);
+                    DataOutputStream bufferedWriter = new DataOutputStream(conn.getOutputStream());
+                    bufferedWriter.writeBytes(jsonParam.toString());
+                    bufferedWriter.flush();
+                    bufferedWriter.close();
                 }
 
                 int responseCode = conn.getResponseCode();
@@ -471,9 +473,9 @@ public class MainActivity extends AppCompatActivity {
                     String status = c.getString(TAG_STATUS);
                     int icon = 0;
                     if(status.equals("#unlocked")) {
-                        icon = R.drawable.ic_lock_open_white_48dp;
+                        icon = R.drawable.ic_lock_open_black_48dp;
                     } else if (status.equals("#locked")) {
-                        icon = R.drawable.ic_lock_outline_white_48dp;
+                        icon = R.drawable.ic_lock_outline_black_48dp;
                     }
 
                     // tmp hashmap for single lock
@@ -515,16 +517,15 @@ public class MainActivity extends AppCompatActivity {
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoOutput(true);
                 httpURLConnection.setDoInput(true);
-                OutputStream outputStream = httpURLConnection.getOutputStream();
-                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
-                String postData = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8") + "&" +
-                        URLEncoder.encode("nickname", "UTF-8") + "=" + URLEncoder.encode(nickname, "UTF-8") + "&" +
-                        URLEncoder.encode("lockInnerID", "UTF-8") + "=" + URLEncoder.encode(lockInnerID, "UTF-8") + "&" +
-                        URLEncoder.encode("orientation", "UTF-8") + "=" + URLEncoder.encode(orientation, "UTF-8");
-                bufferedWriter.write(postData);
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("username", email);
+                jsonParam.put("nickname", nickname);
+                jsonParam.put("lockInnerID", lockInnerID);
+                jsonParam.put("orientation", orientation);
+                DataOutputStream bufferedWriter = new DataOutputStream(httpURLConnection.getOutputStream());
+                bufferedWriter.writeBytes(jsonParam.toString());
                 bufferedWriter.flush();
                 bufferedWriter.close();
-                outputStream.close();
                 InputStream inputStream = httpURLConnection.getInputStream();
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
                 String result = "";
@@ -536,7 +537,7 @@ public class MainActivity extends AppCompatActivity {
                 inputStream.close();
                 httpURLConnection.disconnect();
                 return result;
-            } catch (IOException e) {
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
             return null;
