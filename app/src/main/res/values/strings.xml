@@ -30,10 +30,17 @@
     <string name="options_menu">Options menu</string>
     <string name="register_successful">You have successfully created\n an account</string>
     <string name="switchButton">switch</string>
-    <string name="maintenance">Server currently in maintenance</string>
+    <string name="maintenance">We couldn\'t establish a connection with the server\nPlease check your wifi / data service and try again</string>
     <string name="nolocks">You have no locks associated\n with this account</string>
     <string name="registerGuide">Tap this button to add a lock</string>
     <string name="about_info">This app is a part of our IoT project designed for mobile access to our server, database and remote control of Arduino.</string>
     <string name="about_credits">Glimpse Team\nFor IT 2016 Edition</string>
     <string name="session_expire">This session ID expires on:</string>
+	<string name="no_geocoder_available">No geocoder available</string>
+    <string name="fetch_address">Fetch address</string>
+    <string name="address_found">Address found</string>
+    <string name="no_address_found">Sorry, no address found</string>
+    <string name="no_location_data_provided">No location data provided</string>
+    <string name="service_not_available">Sorry, the service is not available</string>
+    <string name="invalid_lat_long_used">Invalid latitude or longitude used</string>
 </resources>
