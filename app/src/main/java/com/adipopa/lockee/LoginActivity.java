@@ -1,3 +1,13 @@
+/****************************************************************************************
+ *                                                                                       *
+ *   Copyright (C) 2016 Glimpse Team                                                     *
+ *                                                                                       *
+ *       This file is part of the Lockee project and is hereby protected by copyright    *
+ *   and can not be copied and/or distributed without the express permission of all      *
+ *   the Glimpse Team members.                                                           *
+ *                                                                                       *
+ ****************************************************************************************/
+
 package com.adipopa.lockee;
 
 import android.app.Activity;
@@ -24,16 +34,16 @@ import android.widget.TextView;
 import android.view.View;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 
 import dmax.dialog.SpotsDialog;
 
@@ -41,11 +51,11 @@ public class LoginActivity extends AppCompatActivity {
 
     final Context context = this;
     public static Activity loginActivity;
-    EditText emailField, passwordField, shareIDField;
-    TextView emailError, loginError, shareIDError;
+    EditText emailField, passwordField, shareNameField ,shareIDField;
+    TextView emailError, loginError, shareNameError, shareIDError;
     AlertDialog alertDialog;
     LinearLayout linearLayout;
-    String email, password, shareID;
+    String email, password, shareName, shareID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,218 +64,251 @@ public class LoginActivity extends AppCompatActivity {
 
         loginActivity = this;
 
-        MainActivity mainActivity = new MainActivity();
-        mainActivity.finish();
-
         if(!SaveSharedPreference.getSharedID(this).equals("not shared")) {
             Intent i = new Intent(LoginActivity.this, SharedControlActivity.class);
             startActivity(i);
             finish();
-        } else {
-            emailField = (EditText) findViewById(R.id.emailField);
-            passwordField = (EditText) findViewById(R.id.passwordField);
+        }
 
-            emailError = (TextView) findViewById(R.id.emailError);
-            loginError = (TextView) findViewById(R.id.loginError);
+        emailField = (EditText) findViewById(R.id.emailField);
+        passwordField = (EditText) findViewById(R.id.passwordField);
 
-            linearLayout = (LinearLayout) findViewById(R.id.linearLayout);
+        emailError = (TextView) findViewById(R.id.emailError);
+        loginError = (TextView) findViewById(R.id.loginError);
 
-            emailError.setVisibility(View.GONE);
-            loginError.setVisibility(View.GONE);
+        linearLayout = (LinearLayout) findViewById(R.id.linearLayout);
 
-            emailField.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        emailError.setVisibility(View.GONE);
+        loginError.setVisibility(View.GONE);
+
+        emailField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                String email = emailField.getText().toString();
+                hideError(emailField, loginError);
+                if (email.isEmpty()) {
+                    emptyError(emailField, emailError);
+                } else if (!isEmailValid(email)) {
+                    showError(emailField, emailError, "Please type a valid email address");
+                } else {
+                    hideError(emailField, emailError);
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        passwordField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                String password = passwordField.getText().toString();
+                if (password.isEmpty()) {
+                    emptyField(passwordField);
+                } else {
+                    hideError(passwordField, loginError);
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        emailField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (!b) {
                     String email = emailField.getText().toString();
-                    hideError(emailField, loginError);
                     if (email.isEmpty()) {
-                        emptyError(emailField, emailError);
-                    } else if (!isEmailValid(email)) {
-                        showError(emailField, emailError, "Please type a valid email address");
-                    } else {
-                        hideError(emailField, emailError);
+                        emptyField(emailField);
                     }
                 }
+            }
+        });
 
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-
-                }
-            });
-
-            passwordField.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        passwordField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (!b) {
                     String password = passwordField.getText().toString();
                     if (password.isEmpty()) {
                         emptyField(passwordField);
-                    } else {
-                        hideError(passwordField, loginError);
                     }
                 }
+            }
+        });
 
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        final TextView register = (TextView) findViewById(R.id.register);
 
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-
-                }
-            });
-
-            emailField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View view, boolean b) {
-                    if (!b) {
-                        String email = emailField.getText().toString();
-                        if (email.isEmpty()) {
-                            emptyField(emailField);
-                        }
+        register.setOnClickListener(
+                new Button.OnClickListener() {
+                    public void onClick(View v) {
+                        register.setTextColor(Color.parseColor("#3F51B5"));
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                register.setTextColor(Color.parseColor("#1e88e5"));
+                                emailField.setBackground(
+                                        ResourcesCompat.getDrawable(getResources(), R.drawable.edit_text_style, null)
+                                );
+                                passwordField.setBackground(
+                                        ResourcesCompat.getDrawable(getResources(), R.drawable.edit_text_style, null)
+                                );
+                                Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
+                                startActivity(i);
+                            }
+                        }, 200);
                     }
                 }
-            });
+        );
 
-            passwordField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View view, boolean b) {
-                    if (!b) {
-                        String password = passwordField.getText().toString();
-                        if (password.isEmpty()) {
-                            emptyField(passwordField);
-                        }
-                    }
-                }
-            });
+        final TextView guest = (TextView) findViewById(R.id.guest);
 
-            final TextView register = (TextView) findViewById(R.id.register);
+        guest.setOnClickListener(
+                new Button.OnClickListener() {
+                    public void onClick(View v) {
+                        guest.setTextColor(Color.parseColor("#3F51B5"));
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                guest.setTextColor(Color.parseColor("#1e88e5"));
 
-            register.setOnClickListener(
-                    new Button.OnClickListener() {
-                        public void onClick(View v) {
-                            register.setTextColor(Color.parseColor("#3F51B5"));
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    register.setTextColor(Color.parseColor("#4799E8"));
-                                    emailField.setBackground(
-                                            ResourcesCompat.getDrawable(getResources(), R.drawable.edit_text_style, null)
-                                    );
-                                    passwordField.setBackground(
-                                            ResourcesCompat.getDrawable(getResources(), R.drawable.edit_text_style, null)
-                                    );
-                                    Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
-                                    startActivity(i);
-                                }
-                            }, 200);
-                        }
-                    }
-            );
+                                emailField.setBackground(
+                                        ResourcesCompat.getDrawable(getResources(), R.drawable.edit_text_style, null)
+                                );
+                                passwordField.setBackground(
+                                        ResourcesCompat.getDrawable(getResources(), R.drawable.edit_text_style, null)
+                                );
 
-            final TextView guest = (TextView) findViewById(R.id.guest);
+                                final ViewGroup nullParent = null;
+                                LayoutInflater li = LayoutInflater.from(context);
+                                View dialogView = li.inflate(R.layout.share_dialog, nullParent);
 
-            guest.setOnClickListener(
-                    new Button.OnClickListener() {
-                        public void onClick(View v) {
-                            guest.setTextColor(Color.parseColor("#3F51B5"));
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    guest.setTextColor(Color.parseColor("#4799E8"));
+                                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context, R.style.alertDialog);
 
-                                    emailField.setBackground(
-                                            ResourcesCompat.getDrawable(getResources(), R.drawable.edit_text_style, null)
-                                    );
-                                    passwordField.setBackground(
-                                            ResourcesCompat.getDrawable(getResources(), R.drawable.edit_text_style, null)
-                                    );
+                                // set prompts.xml to alertdialog builder
+                                alertDialogBuilder.setView(dialogView);
 
-                                    final ViewGroup nullParent = null;
-                                    LayoutInflater li = LayoutInflater.from(context);
-                                    View dialogView = li.inflate(R.layout.share_dialog, nullParent);
+                                shareIDField = (EditText) dialogView.findViewById(R.id.shareIDField);
+                                shareIDError = (TextView) dialogView.findViewById(R.id.shareIDError);
+                                shareNameField = (EditText) dialogView.findViewById(R.id.shareNameField);
+                                shareNameError = (TextView) dialogView.findViewById(R.id.shareNameError);
+                                shareIDError.setVisibility(View.GONE);
+                                shareNameError.setVisibility(View.GONE);
 
-                                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context, R.style.alertDialog);
+                                // set dialog message
+                                alertDialogBuilder.setPositiveButton("Use the lock", null);
 
-                                    // set prompts.xml to alertdialog builder
-                                    alertDialogBuilder.setView(dialogView);
+                                // create alert dialog
+                                alertDialog = alertDialogBuilder.create();
 
-                                    shareIDField = (EditText) dialogView.findViewById(R.id.shareIDField);
-                                    shareIDError = (TextView) dialogView.findViewById(R.id.shareIDError);
-                                    shareIDError.setVisibility(View.GONE);
-
-                                    // set dialog message
-                                    alertDialogBuilder.setPositiveButton("Use the lock", null);
-
-                                    // create alert dialog
-                                    alertDialog = alertDialogBuilder.create();
-
-                                    alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                                        @Override
-                                        public void onShow(DialogInterface dialog) {
-                                            Button b = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                                            b.setOnClickListener(new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View view) {
-                                                    shareID = shareIDField.getText().toString();
-                                                    if (shareID.isEmpty()) {
-                                                        emptyField(shareIDField);
-                                                    }
-                                                    if (!shareID.isEmpty()) {
-                                                        new onSharedLock().execute();
-                                                    }
+                                alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                                    @Override
+                                    public void onShow(DialogInterface dialog) {
+                                        Button b = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                                        b.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                shareID = shareIDField.getText().toString();
+                                                shareName = shareNameField.getText().toString();
+                                                if (shareName.isEmpty()){
+                                                    emptyField(shareNameField);
                                                 }
-                                            });
+                                                if (shareID.isEmpty()) {
+                                                    emptyField(shareIDField);
+                                                }
+                                                if (!shareName.isEmpty() && !shareID.isEmpty()) {
+                                                    new onSharedLock().execute();
+                                                }
+                                            }
+                                        });
+                                    }
+                                });
+
+                                // show it
+                                alertDialog.show();
+
+                                shareIDField.addTextChangedListener(new TextWatcher() {
+                                    @Override
+                                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                        String lockInnerID = shareIDField.getText().toString();
+                                        if (lockInnerID.isEmpty()) {
+                                            emptyField(shareIDField);
+                                        } else {
+                                            hideError(shareIDField, shareIDError);
                                         }
-                                    });
+                                    }
 
-                                    // show it
-                                    alertDialog.show();
+                                    @Override
+                                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                                    shareIDField.addTextChangedListener(new TextWatcher() {
-                                        @Override
-                                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                    }
+
+                                    @Override
+                                    public void afterTextChanged(Editable editable) {
+
+                                    }
+                                });
+
+                                shareNameField.addTextChangedListener(new TextWatcher() {
+                                    @Override
+                                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                        String name = shareNameField.getText().toString().trim();
+                                        String namePattern2 = "[A-Z]+[a-z]+ +[A-Z]+[a-z]+";
+                                        String namePattern3 = "[A-Z]+[a-z]+ +[A-Z]+[a-z]+ +[A-Z]+[a-z]+";
+                                        String namePattern4 = "[A-Z]+[a-z]+ +[A-Z]+[a-z]+ +[A-Z]+[a-z]+ +[A-Z]+[a-z]+";
+                                        if(name.isEmpty()) {
+                                            emptyError(shareNameField, shareNameError);
+                                        }else if(name.equals("Snoop Dogg")){
+                                            showError(shareNameField, shareNameError, "Smoke weed everyday");
+                                        }else if(!name.matches(namePattern2) && !name.matches(namePattern3) && !name.matches(namePattern4)){
+                                            showError(shareNameField, shareNameError, "Give us your real name");
+                                        }else{
+                                            hideError(shareNameField, shareNameError);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                                    }
+
+                                    @Override
+                                    public void afterTextChanged(Editable editable) {
+
+                                    }
+                                });
+
+                                shareIDField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                                    @Override
+                                    public void onFocusChange(View view, boolean b) {
+                                        if (!b) {
                                             String lockInnerID = shareIDField.getText().toString();
                                             if (lockInnerID.isEmpty()) {
                                                 emptyField(shareIDField);
-                                            } else {
-                                                hideError(shareIDField, shareIDError);
                                             }
                                         }
-
-                                        @Override
-                                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                                        }
-
-                                        @Override
-                                        public void afterTextChanged(Editable editable) {
-
-                                        }
-                                    });
-
-                                    shareIDField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                                        @Override
-                                        public void onFocusChange(View view, boolean b) {
-                                            if (!b) {
-                                                String lockInnerID = shareIDField.getText().toString();
-                                                if (lockInnerID.isEmpty()) {
-                                                    emptyField(shareIDField);
-                                                }
-                                            }
-                                        }
-                                    });
-                                }
-                            }, 200);
-                        }
+                                    }
+                                });
+                            }
+                        }, 200);
                     }
-            );
-        }
+                }
+        );
     }
 
     public void onLogin(View view){
@@ -303,14 +346,13 @@ public class LoginActivity extends AppCompatActivity {
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoOutput(true);
                 httpURLConnection.setDoInput(true);
-                OutputStream outputStream = httpURLConnection.getOutputStream();
-                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
-                String postData = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8") + "&" +
-                        URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8");
-                bufferedWriter.write(postData);
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("username", email);
+                jsonParam.put("password", password);
+                DataOutputStream bufferedWriter = new DataOutputStream(httpURLConnection.getOutputStream());
+                bufferedWriter.writeBytes(jsonParam.toString());
                 bufferedWriter.flush();
                 bufferedWriter.close();
-                outputStream.close();
                 InputStream inputStream = httpURLConnection.getInputStream();
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
                 String result = "";
@@ -322,7 +364,7 @@ public class LoginActivity extends AppCompatActivity {
                 inputStream.close();
                 httpURLConnection.disconnect();
                 return result;
-            } catch (IOException e) {
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
             return null;
@@ -387,13 +429,12 @@ public class LoginActivity extends AppCompatActivity {
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoOutput(true);
                 httpURLConnection.setDoInput(true);
-                OutputStream outputStream = httpURLConnection.getOutputStream();
-                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
-                String postData = URLEncoder.encode("shareID", "UTF-8") + "=" + URLEncoder.encode(shareID, "UTF-8");
-                bufferedWriter.write(postData);
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("shareID", shareID);
+                DataOutputStream bufferedWriter = new DataOutputStream(httpURLConnection.getOutputStream());
+                bufferedWriter.writeBytes(jsonParam.toString());
                 bufferedWriter.flush();
                 bufferedWriter.close();
-                outputStream.close();
                 InputStream inputStream = httpURLConnection.getInputStream();
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
                 String result = "";
@@ -405,7 +446,7 @@ public class LoginActivity extends AppCompatActivity {
                 inputStream.close();
                 httpURLConnection.disconnect();
                 return result;
-            } catch (IOException e) {
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
             return null;
@@ -421,6 +462,7 @@ public class LoginActivity extends AppCompatActivity {
                         switch (result) {
                             case "success":
                                 SaveSharedPreference.setSharedID(LoginActivity.this, shareID);
+                                SaveSharedPreference.setSharedName(LoginActivity.this, shareName);
                                 Intent i = new Intent(LoginActivity.this, SharedControlActivity.class);
                                 startActivity(i);
                                 finish();
