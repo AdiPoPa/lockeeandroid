@@ -3,6 +3,12 @@ The app is a part of our IoT project designed for mobile access to our server, d
 
 # Changelog
 
+## (04/10/2016) [v 1.2.0] - Second official release
+* Changed to white theme
+* Updated connectivity
+* Improved UI and features
+* Prepared for contest finale
+
 ## (08/09/2016) [v 1.1.0] - First official release
 * Added AsyncTask classes inside activites
 * Updated connection with the server
