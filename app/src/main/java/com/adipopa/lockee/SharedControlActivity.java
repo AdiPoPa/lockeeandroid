@@ -1,5 +1,17 @@
+/****************************************************************************************
+ *                                                                                       *
+ *   Copyright (C) 2016 Glimpse Team                                                     *
+ *                                                                                       *
+ *       This file is part of the Lockee project and is hereby protected by copyright    *
+ *   and can not be copied and/or distributed without the express permission of all      *
+ *   the Glimpse Team members.                                                           *
+ *                                                                                       *
+ ****************************************************************************************/
+
 package com.adipopa.lockee;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,17 +37,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -51,9 +60,10 @@ public class SharedControlActivity extends AppCompatActivity {
     GifImageView controlView;
     GifDrawable unlockDrawable, lockDrawable;
     TextView lockNicknameText, shareIDText;
-    String nickname, shareID, lockStatus;
+    String nickname, shareName, shareID, lockStatus;
     RelativeLayout shareControlLayout;
     AlertDialog alertDialog;
+    Boolean inProgress = false;
 
     private static final String TAG_LOCK_DETAILS = "lockDetails";
     private static final String TAG_NICKNAME = "nickname";
@@ -69,13 +79,14 @@ public class SharedControlActivity extends AppCompatActivity {
         LoginActivity loginActivity = new LoginActivity();
         loginActivity.finish();
 
+        shareName = SaveSharedPreference.getSharedName(this);
         shareID = SaveSharedPreference.getSharedID(this);
 
         controlView = (GifImageView)findViewById(R.id.controlView);
 
         try {
-            unlockDrawable = new GifDrawable(getResources(), R.drawable.animatedbuttonunlock);
-            lockDrawable = new GifDrawable(getResources(), R.drawable.animatedbuttonlock);
+            unlockDrawable = new GifDrawable(getResources(), R.drawable.animated_button_unlock_white);
+            lockDrawable = new GifDrawable(getResources(), R.drawable.animated_button_lock_white);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -156,9 +167,18 @@ public class SharedControlActivity extends AppCompatActivity {
         return super.onMenuOpened(featureId, menu);
     }
 
+    public void onCopyShareID(View view){
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("staticShareID", shareIDText.getText().toString());
+        clipboard.setPrimaryClip(clip);
+        Toast toast = Toast.makeText(SharedControlActivity.this, "ShareID copied to your clipboard", Toast.LENGTH_SHORT);
+        toast.show();
+    }
 
     public void onControl(View view){
-        new startControl().execute();
+        if(!inProgress) {
+            new startControl().execute();
+        }
     }
 
     private class startControl extends AsyncTask<Void, Void, String> {
@@ -166,6 +186,7 @@ public class SharedControlActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            inProgress = true;
             unlockDrawable.setSpeed(5.0f);
             lockDrawable.setSpeed(5.0f);
         }
@@ -180,13 +201,13 @@ public class SharedControlActivity extends AppCompatActivity {
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoOutput(true);
                 httpURLConnection.setDoInput(true);
-                OutputStream outputStream = httpURLConnection.getOutputStream();
-                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
-                String postData = URLEncoder.encode("shareID", "UTF-8") + "=" + URLEncoder.encode(shareID, "UTF-8");
-                bufferedWriter.write(postData);
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("guestName", shareName);
+                jsonParam.put("shareID", shareID);
+                DataOutputStream bufferedWriter = new DataOutputStream(httpURLConnection.getOutputStream());
+                bufferedWriter.writeBytes(jsonParam.toString());
                 bufferedWriter.flush();
                 bufferedWriter.close();
-                outputStream.close();
                 InputStream inputStream = httpURLConnection.getInputStream();
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
                 String result = "";
@@ -198,7 +219,7 @@ public class SharedControlActivity extends AppCompatActivity {
                 inputStream.close();
                 httpURLConnection.disconnect();
                 return result;
-            } catch (IOException e) {
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
             return null;
@@ -235,6 +256,7 @@ public class SharedControlActivity extends AppCompatActivity {
                                 finish();
                                 break;
                         }
+                        inProgress = false;
                     } else {
                         Log.e("LockControlHandler", "There was an error handling the control, please check connection");
                     }
@@ -273,16 +295,13 @@ public class SharedControlActivity extends AppCompatActivity {
                 conn.setDoOutput(true);
                 conn.setRequestMethod("POST");
 
-                OutputStream os = conn.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(
-                        new OutputStreamWriter(os, "UTF-8"));
-
-                String result = URLEncoder.encode("shareID", "UTF-8") + "=" + URLEncoder.encode(shareID, "UTF-8");
-
-                writer.write(result);
-                writer.flush();
-                writer.close();
-                os.close();
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("guestName", shareName);
+                jsonParam.put("shareID", shareID);
+                DataOutputStream bufferedWriter = new DataOutputStream(conn.getOutputStream());
+                bufferedWriter.writeBytes(jsonParam.toString());
+                bufferedWriter.flush();
+                bufferedWriter.close();
 
                 int responseCode = conn.getResponseCode();
 
