@@ -1,3 +1,13 @@
+/****************************************************************************************
+ *                                                                                       *
+ *   Copyright (C) 2016 Glimpse Team                                                     *
+ *                                                                                       *
+ *       This file is part of the Lockee project and is hereby protected by copyright    *
+ *   and can not be copied and/or distributed without the express permission of all      *
+ *   the Glimpse Team members.                                                           *
+ *                                                                                       *
+ ****************************************************************************************/
+
 package com.adipopa.lockee;
 
 import android.content.Intent;
@@ -101,8 +111,8 @@ public class LoadingActivity extends AppCompatActivity {
         }
     }
 
-    public void onOfflineMode(View view){
-        Intent i = new Intent(LoadingActivity.this, MainActivity.class);
+    public void onRetry(View view){
+        Intent i = new Intent(LoadingActivity.this, LoadingActivity.class);
         startActivity(i);
         finish();
     }
