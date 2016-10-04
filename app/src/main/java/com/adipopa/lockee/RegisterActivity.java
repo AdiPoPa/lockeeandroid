@@ -1,3 +1,13 @@
+/****************************************************************************************
+ *                                                                                       *
+ *   Copyright (C) 2016 Glimpse Team                                                     *
+ *                                                                                       *
+ *       This file is part of the Lockee project and is hereby protected by copyright    *
+ *   and can not be copied and/or distributed without the express permission of all      *
+ *   the Glimpse Team members.                                                           *
+ *                                                                                       *
+ ****************************************************************************************/
+
 package com.adipopa.lockee;
 
 import android.content.Context;
@@ -19,16 +29,16 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 
 import dmax.dialog.SpotsDialog;
 
@@ -276,11 +286,11 @@ public class RegisterActivity extends AppCompatActivity {
             errorCheckBox.setVisibility(View.VISIBLE);
         } else if(!nameError.isShown() && !emailError.isShown() && !passwordError.isShown() && !confirmPasswordError.isShown() &&
                 !name.isEmpty() && !email.isEmpty() && !password.isEmpty() && !confirmPassword.isEmpty()){
-            new startRegister().execute(name, email, password);
+            new startRegister().execute();
         }
     }
 
-    private class startRegister extends AsyncTask<String, Void, String> {
+    private class startRegister extends AsyncTask<Void, Void, String> {
 
         android.app.AlertDialog progressDialog = new SpotsDialog(RegisterActivity.this, R.style.loadingDialog);
 
@@ -292,11 +302,8 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         @Override
-        protected String doInBackground(String... params) {
+        protected String doInBackground(Void... params) {
             String register_url = "https://lockee-andrei-b.c9users.io/android/register/";
-            String name = params[0];
-            String email = params[1];
-            String password = params[2];
             // This is the login request
             try {
                 URL url = new URL(register_url);
@@ -304,15 +311,14 @@ public class RegisterActivity extends AppCompatActivity {
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoOutput(true);
                 httpURLConnection.setDoInput(true);
-                OutputStream outputStream = httpURLConnection.getOutputStream();
-                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
-                String postData = URLEncoder.encode("name", "UTF-8") + "=" + URLEncoder.encode(name, "UTF-8") + "&" +
-                        URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8") + "&" +
-                        URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8");
-                bufferedWriter.write(postData);
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("name", name);
+                jsonParam.put("username", email);
+                jsonParam.put("password", password);
+                DataOutputStream bufferedWriter = new DataOutputStream(httpURLConnection.getOutputStream());
+                bufferedWriter.writeBytes(jsonParam.toString());
                 bufferedWriter.flush();
                 bufferedWriter.close();
-                outputStream.close();
                 InputStream inputStream = httpURLConnection.getInputStream();
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
                 String result = "";
@@ -324,7 +330,7 @@ public class RegisterActivity extends AppCompatActivity {
                 inputStream.close();
                 httpURLConnection.disconnect();
                 return result;
-            } catch (IOException e) {
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
             return null;
@@ -371,13 +377,12 @@ public class RegisterActivity extends AppCompatActivity {
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoOutput(true);
                 httpURLConnection.setDoInput(true);
-                OutputStream outputStream = httpURLConnection.getOutputStream();
-                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
-                String postData = URLEncoder.encode("username", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8");
-                bufferedWriter.write(postData);
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("username", email);
+                DataOutputStream bufferedWriter = new DataOutputStream(httpURLConnection.getOutputStream());
+                bufferedWriter.writeBytes(jsonParam.toString());
                 bufferedWriter.flush();
                 bufferedWriter.close();
-                outputStream.close();
                 InputStream inputStream = httpURLConnection.getInputStream();
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
                 String result = "";
@@ -389,7 +394,7 @@ public class RegisterActivity extends AppCompatActivity {
                 inputStream.close();
                 httpURLConnection.disconnect();
                 return result;
-            } catch (IOException e) {
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
             return null;
